@@ -102,7 +102,7 @@ function closeAll() { open.value = false; l1.value = null; l2.value = null }
 .fn-arrow.open { transform: rotate(90deg); }
 
 /* Slide panels */
-.sc-panel { position: absolute; top: 0; bottom: 0; background: var(--card); border-right: 1px solid var(--border); z-index: 35; display: flex; flex-direction: column; overflow: hidden; }
+.sc-panel { position: fixed; top: 52px; bottom: 0; background: var(--card); border-right: 1px solid var(--border); z-index: 45; display: flex; flex-direction: column; overflow: hidden; }
 .sc-panel--l1 { left: 200px; width: 200px; }
 .sc-panel--l2 { left: 400px; width: 200px; }
 .sc-panel--l3 { left: 600px; width: 180px; }
@@ -111,12 +111,12 @@ function closeAll() { open.value = false; l1.value = null; l2.value = null }
 .sc-head-close { background: none; border: none; font-size: 11px; color: var(--muted); cursor: pointer; padding: 2px 4px; transition: color .12s; }
 .sc-head-close:hover { color: var(--fg); }
 .sc-list { list-style: none; padding: 0; margin: 0; flex: 1; overflow-y: auto; }
-.sc-row { display: flex; align-items: center; min-height: 32px; cursor: pointer; transition: background .12s; border-bottom: 1px solid color-mix(in srgb, var(--fg) 3%, transparent); }
-.sc-row:hover { background: color-mix(in srgb, var(--fg) 4%, transparent); }
-.sc-row.active { background: color-mix(in srgb, var(--fg) 6%, transparent); }
+.sc-row { display: flex; align-items: center; min-height: 32px; cursor: pointer; transition: background .12s; border-bottom: 1px solid var(--cat-children-border); }
+.sc-row:hover { background: var(--cat-hover); }
+.sc-row.active { background: var(--hover); }
 .sc-link { flex: 1; display: flex; align-items: center; gap: 4px; padding: 6px 10px; font-size: 11px; color: var(--fg); text-decoration: none; min-width: 0; }
 .sc-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sc-count { font-family: var(--mono); font-size: 8px; color: var(--muted); background: color-mix(in srgb, var(--fg) 5%, transparent); padding: 1px 3px; flex-shrink: 0; }
+.sc-count { font-family: var(--mono); font-size: 8px; color: var(--muted); background: var(--cat-count); padding: 1px 3px; flex-shrink: 0; }
 .sc-arr { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; background: none; border: none; color: var(--muted); cursor: pointer; flex-shrink: 0; font-size: 7px; transition: transform .2s, color .12s; margin-right: 2px; }
 .sc-arr:hover { color: var(--fg); }
 .sc-arr.open { transform: rotate(90deg); }

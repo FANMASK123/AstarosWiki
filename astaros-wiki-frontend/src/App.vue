@@ -1,6 +1,5 @@
 <template>
   <div id="app" class="app-shell">
-    <div class="starfield"></div>
 
     <header class="app-header">
       <router-link to="/" class="app-header-brand">阿斯塔洛斯 Wiki</router-link>
@@ -26,12 +25,12 @@
     </header>
 
     <div class="app-main">
+      <aside class="app-sidebar"><Sidebar /></aside>
       <main class="app-content">
         <router-view v-slot="{ Component }">
           <Transition name="page" mode="out-in"><component :is="Component" /></Transition>
         </router-view>
       </main>
-      <aside class="app-sidebar"><Sidebar /></aside>
     </div>
 
     <footer class="app-footer">
@@ -50,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from './stores/user'
 import { Search } from '@element-plus/icons-vue'
@@ -60,9 +59,7 @@ import Mailbox from './components/Mailbox.vue'
 const router = useRouter(); const userStore = useUserStore()
 const kw = ref(''); const mailOpen = ref(false); const t = ref<'dark'|'light'>('dark')
 
-onMounted(() => { const s = localStorage.getItem('hermes-theme'); if (s === 'light') set('light'); else set('dark'); document.addEventListener('mousemove', track) })
-onUnmounted(() => { document.removeEventListener('mousemove', track) })
-function track(e: MouseEvent) { const x = (e.clientX / window.innerWidth * 100).toFixed(1); const y = (e.clientY / window.innerHeight * 100).toFixed(1); document.documentElement.style.setProperty('--mx', x + '%'); document.documentElement.style.setProperty('--my', y + '%') }
+onMounted(() => { const s = localStorage.getItem('hermes-theme'); if (s === 'light') set('light'); else set('dark') })
 function set(v:'dark'|'light') { t.value = v; document.documentElement.setAttribute('data-theme',v); localStorage.setItem('hermes-theme',v) }
 function toggle() { set(t.value==='dark'?'light':'dark') }
 function search() { if (kw.value.trim()) { router.push({path:'/search',query:{keyword:kw.value.trim()}}); kw.value='' } }

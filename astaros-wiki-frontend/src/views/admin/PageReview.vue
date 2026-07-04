@@ -1,5 +1,5 @@
 <template>
-  <div v-if="loading" class="hw-card">加载中...</div>
+  <div v-if="loading" class="card">加载中...</div>
   <div v-else-if="page" class="review-page">
     <div class="review-page-header">
       <router-link to="/admin/pages" class="hw-nav-link" style="margin-right: 16px">
@@ -14,7 +14,7 @@
 
     <div class="review-content">
       <div class="review-content-left">
-        <div class="hw-card">
+        <div class="card">
           <div style="margin-bottom: 16px">
             <span class="hw-tag" v-if="page.categoryName">{{ page.categoryName }}</span>
             <span class="hw-tag" v-for="tag in page.tags" :key="tag">{{ tag }}</span>
@@ -151,7 +151,7 @@
       </div>
     </div>
   </div>
-  <div v-else class="hw-card">
+  <div v-else class="card">
     <el-empty description="页面不存在" />
   </div>
 </template>
@@ -353,7 +353,7 @@ const formatDate = (date: string) => {
 }
 
 .document-scroll::-webkit-scrollbar-thumb:hover {
-  background: var(--classic-accent-secondary);
+  background: var(--fg);
 }
 
 .document-content {

@@ -74,17 +74,31 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useCategoryStore } from '../stores/category'
 import { getCategoryById } from '../api/category'
 import { getPagesByCategory } from '../api/page'
 import type { CategoryDTO } from '../api/category'
 import type { PageDTO } from '../api/page'
 
 const route = useRoute(); const router = useRouter()
+const categoryStore = useCategoryStore()
 const cat = ref<CategoryDTO|null>(null); const parent = ref<CategoryDTO|null>(null)
 const pages = ref<PageDTO[]>([]); const loading = ref(true)
 const cur = ref(0); const totalPages = ref(0)
 const selectedL1 = ref<number>(0)
 const selectedL2 = ref<number>(0)
+
+// Recursively find a category in the tree by ID
+function findInTree(id: number, nodes: CategoryDTO[]): CategoryDTO | null {
+  for (const n of nodes) {
+    if (n.id === id) return n
+    if (n.children?.length) {
+      const found = findInTree(id, n.children)
+      if (found) return found
+    }
+  }
+  return null
+}
 
 const display = computed(() => parent.value || cat.value)
 const hasTabs = computed(() => l1Tabs.value.length > 1)
@@ -110,18 +124,20 @@ const l1Tabs = computed((): CategoryDTO[] => {
 
 const l2Tabs = computed((): CategoryDTO[] => {
   if (!selectedL1.value) return []
-  const target = l1Tabs.value.find(t => t.id === selectedL1.value)
+  const tree = categoryStore.categories
+  const target = findInTree(selectedL1.value, tree)
   if (!target?.children?.length) return []
   return [{ id: target.id, name: '全部', parentId: target.parentId } as CategoryDTO, ...target.children]
 })
 
 const l3Tabs = computed((): CategoryDTO[] => {
   if (!selectedL2.value) return []
-  const target = l2Tabs.value.find(t => t.id === selectedL2.value)
+  const tree = categoryStore.categories
+  const target = findInTree(selectedL2.value, tree)
   return target?.children || []
 })
 
-onMounted(async () => { await load(Number(route.params.id)) })
+onMounted(async () => { await categoryStore.fetchCategories(); await load(Number(route.params.id)) })
 watch(() => route.params.id, async (v) => { cur.value = 0; await load(Number(v)) })
 
 async function load(id: number) {

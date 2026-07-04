@@ -83,8 +83,9 @@ a{color:inherit;text-decoration:none}
 .nav-link:hover,.nav-link.active{color:var(--fg);background:var(--hover)}
 
 /* ── Cards ──────────────────────────────────────────── */
-.card{background:var(--card);border:1px solid var(--border);padding:22px;transition:border-color .2s}
-.card-title{font-weight:700;font-size:16px;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+.card{position:relative;overflow:hidden;background:var(--card);border:1px solid var(--border);padding:22px;transition:border-color .2s,transform .25s cubic-bezier(.4,0,.2,1),box-shadow .25s}
+.card:hover{border-color:var(--muted);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.12)}
+[data-theme='dark'] .card:hover{box-shadow:0 8px 24px rgba(0,0,0,.3)}
 
 /* ── Typography ─────────────────────────────────────── */
 .eyebrow{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.16em;color:var(--muted)}
@@ -175,11 +176,39 @@ a{color:inherit;text-decoration:none}
 .text-muted{color:var(--muted)}
 .mt-8{margin-top:8px}.mt-16{margin-top:16px}.mt-24{margin-top:24px}.mb-8{margin-bottom:8px}.mb-16{margin-bottom:16px}.mb-24{margin-bottom:24px}
 
-/* ── Mailbox floating button ───────────────────────── */
-.mailbox-trigger{position:fixed;bottom:24px;right:24px;z-index:50;width:48px;height:48px;border-radius:50%;background:var(--fg);color:var(--bg);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;transition:transform .2s}
-.mailbox-trigger:hover{transform:scale(1.08)}
-.mailbox-panel{position:fixed;bottom:84px;right:24px;z-index:50;width:340px;max-height:420px;overflow-y:auto;background:var(--card);border:1px solid var(--border);padding:16px}
-.mailbox-badge{position:absolute;top:-4px;right:-4px;width:18px;height:18px;border-radius:50%;background:#e74c3c;color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center}
+/* ── Misc ───────────────────────────────────────────── */
+
+/* Page transitions: smooth fade+slide */
+.page-enter-active{transition:opacity .25s cubic-bezier(.4,0,.2,1),transform .25s cubic-bezier(.4,0,.2,1)}
+.page-leave-active{transition:opacity .15s cubic-bezier(.4,0,1,1),transform .15s cubic-bezier(.4,0,1,1)}
+.page-enter-from{opacity:0;transform:translateY(12px)}
+.page-leave-to{opacity:0;transform:translateY(-8px)}
+
+/* Button press */
+.btn:active{transform:scale(.97);transition:transform .05s}
+
+/* Focus ring */
+.btn:focus-visible,.cat-tab:focus-visible,.cat-toggle:focus-visible,.nav-link:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+
+/* Stagger list items */
+.stack>*{animation:fadeUp .3s ease-out backwards}
+.stack>*:nth-child(1){animation-delay:0s}
+.stack>*:nth-child(2){animation-delay:.05s}
+.stack>*:nth-child(3){animation-delay:.1s}
+.stack>*:nth-child(4){animation-delay:.15s}
+.stack>*:nth-child(5){animation-delay:.2s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* Mailbox trigger */
+.mailbox-trigger{position:fixed;bottom:24px;right:24px;z-index:50;width:48px;height:48px;border-radius:50%;background:var(--fg);color:var(--bg);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 4px 16px rgba(0,0,0,.3);transition:transform .2s cubic-bezier(.4,0,.2,1),box-shadow .2s}
+.mailbox-trigger:hover{transform:scale(1.1);box-shadow:0 8px 28px rgba(0,0,0,.4)}
+
+/* Theme transition: smooth all element transitions */
+[data-theme]{transition:background .4s cubic-bezier(.4,0,.2,1)}
+[data-theme] *{transition:background .3s,color .3s,border-color .3s,box-shadow .3s}
+
+/* Smooth scroll */
+@media(prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
 
 /* ══════════════════════════════════════════════════════
    ELEMENT PLUS OVERRIDES (eye-friendly dark)

@@ -82,5 +82,7 @@ public interface PageRepository extends JpaRepository<WikiPage, Long> {
     // 批量迁移页面到另一个分类
     @Modifying
     @Query("UPDATE WikiPage p SET p.categoryId = :targetCategoryId WHERE p.categoryId = :sourceCategoryId")
-    int migratePagesToCategory(@Param("sourceCategoryId") Long sourceCategoryId, @Param("targetCategoryId") Long targetCategoryId);
+    int migratePagesToCategory(
+        @Param("sourceCategoryId") Long sourceCategoryId,
+        @Param("targetCategoryId") Long targetCategoryId);
 }

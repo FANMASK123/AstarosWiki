@@ -109,10 +109,9 @@ public class CategoryService {
 
         // 如果有迁移目标，先迁移页面
         if (migrateTo != null) {
-            Category target = categoryRepository.findById(migrateTo)
+            categoryRepository.findById(migrateTo)
                 .orElseThrow(() -> new BusinessException("目标分类不存在"));
-            int count = pageRepository.migratePagesToCategory(id, migrateTo);
-            // 日志：迁移了多少页面
+            pageRepository.migratePagesToCategory(id, migrateTo);
         }
 
         categoryRepository.delete(category);

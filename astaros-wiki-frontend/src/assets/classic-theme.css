@@ -1,0 +1,289 @@
+/* 古典风格主题 CSS */
+
+:root {
+  /* 古典色彩 */
+  --classic-bg-primary: #f5f0eb;
+  --classic-bg-secondary: #ede6dc;
+  --classic-bg-card: #ffffff;
+  --classic-text-primary: #3a3a3a;
+  --classic-text-secondary: #6b6b6b;
+  --classic-accent-primary: #8b7355;
+  --classic-accent-secondary: #6a5344;
+  --classic-border: #d4c8b8;
+  --classic-shadow: rgba(139, 115, 85, 0.15);
+}
+
+/* 全局样式 */
+body {
+  background-color: var(--classic-bg-primary);
+  font-family: 'Georgia', 'Times New Roman', serif;
+  color: var(--classic-text-primary);
+  margin: 0;
+  padding: 0;
+}
+
+/* 纸张纹理背景 */
+.classic-paper {
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  background-color: var(--classic-bg-primary);
+}
+
+/* 导航栏 */
+.classic-navbar {
+  background-color: #4a3728;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 8px var(--classic-shadow);
+}
+
+.classic-navbar-title {
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: bold;
+  text-decoration: none;
+  letter-spacing: 2px;
+}
+
+.classic-navbar-menu {
+  display: flex;
+  gap: 24px;
+}
+
+.classic-navbar-link {
+  color: #ffffff;
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.classic-navbar-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.classic-navbar-button {
+  background-color: var(--classic-accent-primary);
+  color: #ffffff;
+  padding: 8px 24px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.classic-navbar-button:hover {
+  background-color: var(--classic-accent-secondary);
+}
+
+/* 卡片样式 */
+.classic-card {
+  background-color: var(--classic-bg-card);
+  border: 1px solid var(--classic-border);
+  border-radius: 4px;
+  padding: 24px;
+  box-shadow: 0 2px 8px var(--classic-shadow);
+  transition: box-shadow 0.3s;
+}
+
+.classic-card:hover {
+  box-shadow: 0 4px 16px var(--classic-shadow);
+}
+
+.classic-card-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--classic-text-primary);
+  margin-bottom: 12px;
+}
+
+.classic-card-content {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--classic-text-secondary);
+}
+
+/* 按钮样式 */
+.classic-button {
+  background-color: var(--classic-accent-primary);
+  color: #ffffff;
+  padding: 12px 32px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  font-family: inherit;
+  transition: all 0.3s;
+}
+
+.classic-button:hover {
+  background-color: var(--classic-accent-secondary);
+  transform: translateY(-2px);
+}
+
+.classic-button-secondary {
+  background-color: transparent;
+  color: var(--classic-accent-primary);
+  border: 1px solid var(--classic-accent-primary);
+  padding: 12px 32px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  font-family: inherit;
+  transition: all 0.3s;
+}
+
+.classic-button-secondary:hover {
+  background-color: var(--classic-accent-primary);
+  color: #ffffff;
+}
+
+/* 输入框样式 */
+.classic-input {
+  background-color: var(--classic-bg-card);
+  border: 1px solid var(--classic-border);
+  border-radius: 4px;
+  padding: 12px 16px;
+  font-size: 16px;
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.3s;
+}
+
+.classic-input:focus {
+  outline: none;
+  border-color: var(--classic-accent-primary);
+}
+
+/* 布局容器 */
+.classic-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 24px 24px 224px;
+}
+
+.classic-section {
+  margin-bottom: 32px;
+}
+
+.classic-row {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.classic-column {
+  flex: 1;
+  min-width: 300px;
+}
+
+/* 列表样式 */
+.classic-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.classic-list-item {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--classic-border);
+}
+
+.classic-list-item:last-child {
+  border-bottom: none;
+}
+
+/* 标签样式 */
+.classic-tag {
+  display: inline-block;
+  background-color: var(--classic-bg-secondary);
+  color: var(--classic-text-primary);
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  margin: 4px;
+}
+
+/* 分页样式 */
+.classic-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.classic-pagination-button {
+  background-color: var(--classic-bg-card);
+  border: 1px solid var(--classic-border);
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.classic-pagination-button:hover {
+  background-color: var(--classic-accent-primary);
+  color: #ffffff;
+  border-color: var(--classic-accent-primary);
+}
+
+.classic-pagination-button.active {
+  background-color: var(--classic-accent-primary);
+  color: #ffffff;
+  border-color: var(--classic-accent-primary);
+}
+
+/* Element Plus 主题覆盖 */
+.el-button--primary {
+  background-color: var(--classic-accent-primary) !important;
+  border-color: var(--classic-accent-primary) !important;
+}
+
+.el-button--primary:hover {
+  background-color: var(--classic-accent-secondary) !important;
+  border-color: var(--classic-accent-secondary) !important;
+}
+
+.el-card {
+  border: 1px solid var(--classic-border) !important;
+  box-shadow: 0 2px 8px var(--classic-shadow) !important;
+}
+
+.el-menu {
+  background-color: var(--classic-bg-card) !important;
+  border-right: 1px solid var(--classic-border) !important;
+}
+
+.el-menu-item.is-active {
+  background-color: var(--classic-bg-secondary) !important;
+  color: var(--classic-accent-primary) !important;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .classic-navbar {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .classic-navbar-menu {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .classic-row {
+    flex-direction: column;
+  }
+
+  .classic-container {
+    padding: 16px;
+  }
+
+  .sidebar-container {
+    display: none;
+  }
+}

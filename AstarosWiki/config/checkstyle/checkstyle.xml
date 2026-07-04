@@ -1,0 +1,326 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+    "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+    "https://checkstyle.org/dtds/configuration_1_3.dtd">
+
+<!--
+    AstarosWiki Checkstyle 配置
+    基于 Sun Code Conventions + Google Java Style Guide 定制
+    对齐项目架构约定（AGENTS.md § 架构约定）
+
+    集成方式：
+      mvn checkstyle:check           # 手动检查
+      mvn validate                    # 绑定到 validate 阶段
+      IDE 插件                         # IntelliJ: CheckStyle-IDEA
+-->
+
+<module name="Checker">
+
+    <!-- ============================================================ -->
+    <!-- 基础属性 -->
+    <!-- ============================================================ -->
+    <property name="charset" value="UTF-8"/>
+    <property name="severity" value="warning"/>
+    <property name="fileExtensions" value="java, properties, xml"/>
+
+    <!-- ============================================================ -->
+    <!-- 文件级检查 -->
+    <!-- ============================================================ -->
+
+    <!-- 禁止 Tab 字符 -->
+    <module name="FileTabCharacter">
+        <property name="eachLine" value="true"/>
+        <message key="file.containsTab"
+                 value="[FileTabCharacter] 文件包含 Tab 字符，请替换为 4 空格缩进"/>
+    </module>
+
+    <!-- 文件末尾必须有换行符 -->
+    <module name="NewlineAtEndOfFile">
+        <message key="noNewlineAtEOF"
+                 value="[NewlineAtEndOfFile] 文件末尾缺少换行符"/>
+    </module>
+
+    <!-- 单行最大长度 -->
+    <module name="LineLength">
+        <property name="max" value="120"/>
+        <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
+        <message key="maxLineLen"
+                 value="[LineLength] 行长度 {0} 超过上限 120 字符（当前 {1}）"/>
+    </module>
+
+    <!-- ============================================================ -->
+    <!-- TreeWalker：AST 级别检查 -->
+    <!-- ============================================================ -->
+    <module name="TreeWalker">
+
+        <!-- ── 命名规范 ── -->
+
+        <!-- 包名：全小写 -->
+        <module name="PackageName">
+            <property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$"/>
+            <message key="name.invalidPattern"
+                     value="[PackageName] 包名 ''{0}'' 不符合规范 — 必须全小写，如 com.example.astaroswiki"/>
+        </module>
+
+        <!-- 类/接口/枚举：大驼峰 -->
+        <module name="TypeName">
+            <message key="name.invalidPattern"
+                     value="[TypeName] 类型名 ''{0}'' 不符合规范 — 必须大驼峰，如 WikiPage"/>
+        </module>
+
+        <!-- 方法名：小驼峰 -->
+        <module name="MethodName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+            <message key="name.invalidPattern"
+                     value="[MethodName] 方法名 ''{0}'' 不符合规范 — 必须小驼峰，如 getPageBySlug"/>
+        </module>
+
+        <!-- 常量：全大写+下划线 -->
+        <module name="ConstantName">
+            <property name="format" value="^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$"/>
+            <message key="name.invalidPattern"
+                     value="[ConstantName] 常量 ''{0}'' 不符合规范 — 必须全大写下划线，如 MAX_PAGE_SIZE"/>
+        </module>
+
+        <!-- 成员变量：小驼峰 -->
+        <module name="MemberName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+            <message key="name.invalidPattern"
+                     value="[MemberName] 成员变量 ''{0}'' 不符合规范 — 必须小驼峰"/>
+        </module>
+
+        <!-- 局部变量：小驼峰 -->
+        <module name="LocalVariableName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+            <message key="name.invalidPattern"
+                     value="[LocalVariableName] 变量 ''{0}'' 不符合规范 — 必须小驼峰"/>
+        </module>
+
+        <!-- 参数名：小驼峰 -->
+        <module name="ParameterName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+            <message key="name.invalidPattern"
+                     value="[ParameterName] 参数 ''{0}'' 不符合规范 — 必须小驼峰"/>
+        </module>
+
+        <!-- ── Import 规范 ── -->
+
+        <!-- 禁止冗余 import（同名包内的类） -->
+        <module name="RedundantImport"/>
+
+        <!-- 禁止未使用的 import -->
+        <module name="UnusedImports">
+            <message key="import.unused"
+                     value="[UnusedImports] 未使用的导入 — 请删除 {0}"/>
+        </module>
+
+        <!-- 禁止星号 import -->
+        <module name="AvoidStarImport">
+            <message key="import.avoidStar"
+                     value="[AvoidStarImport] 禁止星号导入 — 请显式导入每个类"/>
+        </module>
+
+        <!-- ── 代码结构 ── -->
+
+        <!-- 禁止空 catch 块 -->
+        <module name="EmptyCatchBlock">
+            <property name="exceptionVariableName" value="expected|ignored"/>
+            <message key="catch.block.empty"
+                     value="[EmptyCatchBlock] 空 catch 块 — 必须至少包含注释或日志"/>
+        </module>
+
+        <!-- 禁止空语句块 -->
+        <module name="EmptyBlock">
+            <property name="option" value="TEXT"/>
+            <property name="tokens" value="LITERAL_TRY, LITERAL_FINALLY, LITERAL_IF, LITERAL_ELSE, LITERAL_SWITCH"/>
+        </module>
+
+        <!-- 禁止空语句（单独的分号） -->
+        <module name="EmptyStatement"/>
+
+        <!-- 数组类型风格：String[] args 而非 String args[] -->
+        <module name="ArrayTypeStyle"/>
+
+        <!-- 禁止重复导入 -->
+        <module name="RedundantImport"/>
+
+        <!-- 禁止无用的修饰符（如接口方法中的 public abstract） -->
+        <module name="RedundantModifier"/>
+
+        <!-- 左花括号位置：行尾 -->
+        <module name="LeftCurly">
+            <property name="tokens" value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF,
+                                           METHOD_DEF, CTOR_DEF,
+                                           LITERAL_IF, LITERAL_ELSE, LITERAL_WHILE,
+                                           LITERAL_DO, LITERAL_FOR, LITERAL_TRY,
+                                           LITERAL_CATCH, LITERAL_FINALLY,
+                                           LITERAL_SWITCH, LAMBDA"/>
+        </module>
+
+        <!-- 右花括号位置：同缩进级别单独一行 -->
+        <module name="RightCurly">
+            <property name="id" value="RightCurlySame"/>
+            <property name="tokens" value="LITERAL_TRY, LITERAL_CATCH, LITERAL_FINALLY, LITERAL_IF, LITERAL_ELSE"/>
+        </module>
+        <module name="RightCurly">
+            <property name="id" value="RightCurlyAlone"/>
+            <property name="option" value="alone"/>
+            <property name="tokens" value="CLASS_DEF, METHOD_DEF, CTOR_DEF,
+                                           LITERAL_FOR, LITERAL_WHILE,
+                                           STATIC_INIT, INSTANCE_INIT"/>
+        </module>
+
+        <!-- ── 空格规范 ── -->
+
+        <!-- 关键词后必须有空格 (if, for, while, catch ...) -->
+        <module name="WhitespaceAfter">
+            <property name="tokens" value="COMMA, SEMI, TYPECAST, LITERAL_IF,
+                                           LITERAL_ELSE, LITERAL_WHILE,
+                                           LITERAL_DO, LITERAL_FOR"/>
+        </module>
+
+        <!-- 运算符两侧必须有空格 -->
+        <module name="WhitespaceAround">
+            <property name="allowEmptyConstructors" value="true"/>
+            <property name="allowEmptyMethods" value="true"/>
+            <property name="allowEmptyTypes" value="true"/>
+            <property name="allowEmptyLoops" value="true"/>
+            <message key="ws.notPreceded"
+                     value="[WhitespaceAround] ''{0}'' 前面缺少空格"/>
+            <message key="ws.notFollowed"
+                     value="[WhitespaceAround] ''{0}'' 后面缺少空格"/>
+        </module>
+
+        <!-- 泛型尖括号两侧无空格: List<String> -->
+        <module name="GenericWhitespace">
+            <message key="ws.followed"
+                     value="[GenericWhitespace] ''{0}'' 后不应有空格"/>
+            <message key="ws.preceded"
+                     value="[GenericWhitespace] ''{0}'' 前不应有空格"/>
+            <message key="ws.illegalFollow"
+                     value="[GenericWhitespace] ''{0}'' 后应有空格"/>
+            <message key="ws.notPreceded"
+                     value="[GenericWhitespace] ''{0}'' 前不应有空格"/>
+        </module>
+
+        <!-- 方法参数逗号后空格 -->
+        <module name="MethodParamPad">
+            <message key="line.previous"
+                     value="[MethodParamPad] 方法参数 ''{0}'' 前有换行 — 参数应紧跟方法名"/>
+            <message key="ws.preceded"
+                     value="[MethodParamPad] 左括号前不应有空格"/>
+        </module>
+
+        <!-- 禁止圆括号前空格 (method() 而非 method ()) -->
+        <module name="ParenPad">
+            <property name="tokens" value="ANNOTATION, ANNOTATION_FIELD_DEF,
+                                           CTOR_CALL, CTOR_DEF, ENUM_CONSTANT_DEF,
+                                           EXPR, LITERAL_CATCH, LITERAL_DO,
+                                           LITERAL_FOR, LITERAL_IF, LITERAL_NEW,
+                                           LITERAL_SWITCH, LITERAL_SYNCHRONIZED,
+                                           LITERAL_WHILE, METHOD_CALL,
+                                           METHOD_DEF, QUESTION, RESOURCE_SPECIFICATION,
+                                           SUPER_CTOR_CALL"/>
+        </module>
+
+        <!-- 禁止多余空格（行尾、连续空格） -->
+        <module name="NoWhitespaceAfter">
+            <property name="tokens" value="INC, DEC, UNARY_MINUS, UNARY_PLUS,
+                                           BNOT, LNOT, DOT, ARRAY_DECLARATOR, INDEX_OP"/>
+        </module>
+        <module name="NoWhitespaceBefore">
+            <property name="tokens" value="COMMA, SEMI, POST_INC, POST_DEC, DOT, ELLIPSIS"/>
+        </module>
+
+        <!-- ── 注解规范 ── -->
+        <module name="AnnotationLocation">
+            <property name="id" value="AnnotationLocationMostCases"/>
+            <property name="tokens" value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF,
+                                           METHOD_DEF, CTOR_DEF,
+                                           VARIABLE_DEF"/>
+        </module>
+
+        <!-- ── 代码质量 ── -->
+
+        <!-- 禁止过长方法（项目 Service 层方法通常较长，放宽到 80） -->
+        <module name="MethodLength">
+            <property name="tokens" value="METHOD_DEF"/>
+            <property name="max" value="80"/>
+            <property name="countEmpty" value="false"/>
+            <message key="maxLen.method"
+                     value="[MethodLength] 方法长度 {0} 行超过上限 80 — 请拆分为子方法"/>
+        </module>
+
+        <!-- 禁止过多参数 -->
+        <module name="ParameterNumber">
+            <property name="max" value="7"/>
+            <property name="tokens" value="METHOD_DEF"/>
+            <message key="maxParam"
+                     value="[ParameterNumber] 方法参数 {0} 个超过上限 7 — 请封装为 DTO"/>
+        </module>
+
+        <!-- 禁止嵌套过深 -->
+        <module name="NestedIfDepth">
+            <property name="max" value="3"/>
+            <message key="nested.if.depth"
+                     value="[NestedIfDepth] if 嵌套深度 {0} 超过上限 3 — 请提前 return"/>
+        </module>
+
+        <!-- 禁止嵌套 try-catch -->
+        <module name="NestedTryDepth">
+            <property name="max" value="1"/>
+            <message key="nested.try.depth"
+                     value="[NestedTryDepth] try 嵌套深度超过上限 1 — 请提取方法"/>
+        </module>
+
+        <!-- 禁止魔法数字（允许 -1, 0, 1, 2） -->
+        <module name="MagicNumber">
+            <property name="ignoreNumbers" value="-1, 0, 1, 2"/>
+            <property name="ignoreAnnotation" value="true"/>
+            <property name="ignoreFieldDeclaration" value="true"/>
+            <message key="magic.number"
+                     value="[MagicNumber] 魔法数字 ''{0}'' — 请定义为有意义的常量"/>
+        </module>
+
+        <!-- ── 注释规范（按项目风格：允许详细注释） ── -->
+
+        <!-- 确保有 Javadoc 的方法/类不检查（项目使用中文行注释风格，不强制 Javadoc） -->
+
+        <!-- 禁止注释中嵌套注释 -->
+        <module name="TodoComment">
+            <property name="format" value="(TODO|FIXME|XXX)"/>
+            <message key="todo.match"
+                     value="[TodoComment] 待办标记 ''{0}'' — 请在 JIRA/Issue 中跟踪"/>
+        </module>
+
+        <!-- ── 与 Lombok 兼容性 ── -->
+
+        <!-- 禁止显式默认构造器（与 @RequiredArgsConstructor / @NoArgsConstructor 冲突） -->
+        <!-- 跳过：项目大量使用 Lombok，此规则由开发者自行把握 -->
+
+        <!-- ============================================================ -->
+        <!-- 项目定制规则 -->
+        <!-- ============================================================ -->
+
+        <!-- 规则 1：Controller 不得包含 @Transactional（应在 Service 层） -->
+        <module name="RegexpSinglelineJava">
+            <property name="format" value="@Transactional"/>
+            <property name="ignoreComments" value="true"/>
+            <property name="message"
+                      value="[ArchGuard] Controller 不应使用 @Transactional — 事务应在 Service 层管理"/>
+            <!-- 仅对 Controller 生效，需通过 suppressions 配置 -->
+        </module>
+
+    </module>
+
+    <!-- ============================================================ -->
+    <!-- 排除文件 -->
+    <!-- ============================================================ -->
+    <!-- 注意：如需排除特定文件，在单独的 suppressions.xml 中配置 -->
+    <!--
+    <module name="SuppressionFilter">
+        <property name="file" value="${config_loc}/checkstyle-suppressions.xml"/>
+    </module>
+    -->
+
+</module>

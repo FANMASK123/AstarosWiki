@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+    "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+    "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+
+<suppressions>
+    <suppress checks=".*"
+              files=".*[\\/]entity[\\/].*\.java"
+              message=".*MemberName.*"/>
+
+    <suppress checks="ConstantName"
+              files=".*[\\/]enums[\\/].*\.java"/>
+
+    <suppress checks="MagicNumber"
+              files=".*[\\/]test[\\/].*\.java"/>
+
+    <suppress checks="MemberName"
+              files=".*[\\/]dto[\\/].*\.java"/>
+
+    <suppress checks="NoWhitespaceBefore"
+              files=".*[\\/]config[\\/]SecurityConfig\.java"/>
+
+    <suppress checks="NoWhitespaceBefore"
+              files=".*[\\/]service[\\/].*\.java"/>
+
+    <suppress checks="NoWhitespaceBefore"
+              files=".*[\\/]security[\\/]CustomUserDetailsService\.java"/>
+
+    <suppress checks="NoWhitespaceBefore"
+              files=".*[\\/]util[\\/]JwtUtil\.java"/>
+
+    <suppress checks="RegexpSinglelineJava"
+              files=".*[\\/]service[\\/].*\.java"/>
+</suppressions>

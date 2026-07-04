@@ -1,0 +1,11 @@
+# AstarosWiki pre-commit hook
+# 每次 git commit 前自动运行: lint-staged → gitleaks
+
+npx lint-staged
+
+# Secret scan (gitleaks) — 如未安装则跳过
+if command -v gitleaks >/dev/null 2>&1; then
+  gitleaks protect --staged -c .gitleaks.toml --no-banner -v
+else
+  echo "[pre-commit] gitleaks not installed — skipping secret scan"
+fi

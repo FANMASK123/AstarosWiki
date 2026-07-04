@@ -1,0 +1,20 @@
+# Gitleaks 配置 — 扫描硬编码密钥/密码/Token
+# 用法: gitleaks detect -c .gitleaks.toml
+
+title = "AstarosWiki Gitleaks Config"
+
+[allowlist]
+  description = "已知的测试/示例密码（生产部署前必须移除）"
+  paths = [
+    '''docx/''',
+    '''\.gitignore''',
+    '''AGENTS\.md''',
+  ]
+  # 注意：application.yml 中的硬编码密码不应被 allow —
+  # gitleaks 应报告它们，提醒生产部署前修复
+
+[[rules]]
+  id = "generic-api-key"
+  description = "通用 API Key / Token 模式"
+  regex = '''(?i)(api[_-]?key|secret|token|password|passwd|pwd)["']?\s*[:=]\s*["'][^"'\s]{8,}["']'''
+  tags = ["secret", "key"]

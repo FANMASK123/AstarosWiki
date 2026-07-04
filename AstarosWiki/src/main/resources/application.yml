@@ -1,0 +1,70 @@
+# ============================================================
+# Spring Boot 配置文件 - application.yml
+# ============================================================
+#
+# 敏感值使用 ${ENV_VAR:default} 语法。
+# 本地开发：直接使用默认值即可。
+# 生产部署：通过环境变量覆盖：
+#   export DB_PASSWORD=xxx
+#   export REDIS_PASSWORD=xxx
+#   export JWT_SECRET=xxx
+
+spring:
+  application:
+    name: AstarosWiki
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/astaros_wiki?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME:astaros_wiki}
+    password: ${DB_PASSWORD:123456}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: ${REDIS_PASSWORD:123456}
+      database: 0
+      timeout: 5000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+    serialization:
+      write-dates-as-timestamps: false
+
+server:
+  port: ${SERVER_PORT:8801}
+  servlet:
+    context-path:
+
+jwt:
+  secret: ${JWT_SECRET:astaros-wiki-secret-key-for-jwt-token-generation-and-validation-2024}
+  expiration: 86400000
+  header: Authorization
+  prefix: Bearer
+
+knife4j:
+  enable: ${KNIFE4J_ENABLE:true}
+  setting:
+    language: zh_cn

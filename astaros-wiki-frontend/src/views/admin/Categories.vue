@@ -311,12 +311,6 @@ const migrateTargets = computed((): CategoryDTO[] => {
 .cat-tree-actions {
   display: flex;
   gap: 4px;
-  opacity: 0;
-  transition: opacity .15s;
-}
-
-.cat-tree-row:hover .cat-tree-actions {
-  opacity: 1;
 }
 
 .btn-sm {
@@ -327,9 +321,10 @@ const migrateTargets = computed((): CategoryDTO[] => {
 .btn-danger {
   color: #ef4444;
   border-color: #ef4444;
+  background: transparent;
 }
-
 .btn-danger:hover {
-  background: rgba(239, 68, 68, 0.1);
+  background: rgba(239, 68, 68, 0.12);
+  border-color: #dc2626;
 }
 </style>

@@ -320,7 +320,7 @@ const migrateTargets = computed((): CategoryDTO[] => {
 
 .btn-danger {
   color: #ef4444;
-  border-color: #ef4444;
+  border: 1px solid #ef4444;
   background: transparent;
 }
 .btn-danger:hover {

@@ -75,12 +75,6 @@ a{color:inherit;text-decoration:none}
 }
 @keyframes drift{0%{transform:translateY(0)}100%{transform:translateY(-160px)}}
 
-/* Stream lines */
-.starfield-line{pointer-events:none;position:fixed;inset:0;z-index:0;display:none;background:radial-gradient(ellipse at var(--mx,50%) var(--my,50%),rgba(180,200,255,.04) 0%,transparent 60%);}
-[data-theme='dark'] .starfield-line{display:block}
-.starfield-dot{position:absolute;border-radius:50%;background:rgba(200,220,255,.5)}
-@keyframes star-rotate{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-
 /* ── Scrollbar ──────────────────────────────────────── */
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:transparent}

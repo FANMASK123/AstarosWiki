@@ -21,9 +21,9 @@
 [data-theme='dark'] {
   --color-background: #0000f2;
   --color-foreground: #f5f5f5;
-  --color-card: rgba(255,255,255,0.06);
-  --color-border: rgba(245,245,245,0.15);
-  --color-muted: rgba(245,245,245,0.55);
+  --color-card: color-mix(in srgb, var(--color-foreground) 6%, transparent);
+  --color-border: color-mix(in srgb, var(--color-foreground) 15%, transparent);
+  --color-muted: color-mix(in srgb, var(--color-foreground) 55%, transparent);
   --color-accent: #f5f5f5;
 }
 
@@ -211,3 +211,72 @@ a { color: inherit; text-decoration: none; }
 .el-message { border-radius: 0 !important; border: 1px solid var(--color-border) !important; background: var(--color-card) !important; }
 .el-tabs__item { text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.8rem; transition: color 150ms; }
 .el-tabs__active-bar { background: var(--color-foreground) !important; }
+
+/* ── Card Arc (装饰弧线) ─────────────────────────── */
+.hw-card-arc {
+  position: absolute; inset: 11%; z-index: 0; pointer-events: none;
+  border: 1px solid var(--color-muted); border-bottom-color: transparent;
+  border-radius: 999px 999px 0 0; opacity: 0.25;
+  transform: translateY(18%); transition: opacity 300ms;
+}
+.hw-card:hover .hw-card-arc { opacity: 0.45; }
+
+/* ── Platform Card (图片背景卡片) ────────────────── */
+.hw-card-platform {
+  min-height: 220px; background-size: cover; background-position: center;
+}
+.hw-card-wash {
+  position: absolute; inset: 0; z-index: 0;
+  background: color-mix(in srgb, var(--color-background) 46%, transparent);
+}
+.hw-card-platform-content {
+  position: relative; z-index: 1; display: flex;
+  flex-direction: column; align-items: center; justify-content: center;
+  height: 100%; text-align: center;
+}
+
+/* ── Terminal Block ──────────────────────────────── */
+.hw-terminal {
+  border: 1px solid var(--color-border); background: var(--color-card); overflow: hidden;
+}
+.hw-terminal-tabs {
+  display: flex; border-bottom: 1px solid var(--color-border);
+}
+.hw-terminal-tab {
+  padding: 10px 18px; font-family: var(--font-mono); font-size: 0.75rem;
+  border: none; border-bottom: 2px solid transparent; background: none;
+  color: var(--color-muted); cursor: pointer; transition: color 150ms, border-color 150ms;
+}
+.hw-terminal-tab.active {
+  color: var(--color-foreground); border-bottom-color: var(--color-foreground); font-weight: 700;
+}
+.hw-terminal-body {
+  display: flex; align-items: center; padding: 14px 18px;
+  font-family: var(--font-mono); font-size: 0.85rem;
+}
+.hw-terminal-body code { flex: 1; color: var(--color-foreground); }
+.hw-terminal-copy {
+  background: none; border: none; color: var(--color-muted);
+  cursor: pointer; padding: 4px; transition: color 150ms;
+}
+.hw-terminal-copy:hover { color: var(--color-foreground); }
+
+/* ── Footer Wordmark ─────────────────────────────── */
+.hw-footer-wordmark {
+  font-size: clamp(3rem, 15vw, 15rem); font-weight: 300;
+  text-transform: uppercase; line-height: 0.85; letter-spacing: 0.02em;
+  text-align: center; opacity: 0.12; margin-top: 4rem;
+  pointer-events: none; user-select: none;
+}
+
+/* ── Preview Frame ───────────────────────────────── */
+.hw-preview-frame {
+  position: relative; aspect-ratio: 16/10; overflow: hidden;
+  border: 1px solid var(--color-border);
+}
+.hw-preview-img { width: 100%; height: 100%; object-fit: cover; }
+.hw-preview-border {
+  position: absolute; inset: 0; pointer-events: none;
+  border: clamp(8px, 4vw, 55px) solid var(--color-background);
+  mix-blend-mode: lighten;
+}

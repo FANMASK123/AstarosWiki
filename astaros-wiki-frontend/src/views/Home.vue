@@ -78,21 +78,37 @@
       <p class="hw-eyebrow">快捷入口</p>
       <h2 class="hw-section-title">热门主题</h2>
       <div class="home-quick-grid">
-        <router-link to="/page/夜族" class="hw-card home-quick-card">
-          <h3 class="hw-card-title">夜族</h3>
-          <p class="hw-mono">探索夜族的神秘世界</p>
+        <router-link to="/page/夜族" class="hw-card hw-card-platform home-quick-card">
+          <span class="hw-card-arc"></span>
+          <div class="hw-card-wash"></div>
+          <div class="hw-card-platform-content">
+            <h3 class="hw-card-title">夜族</h3>
+            <p class="hw-mono">探索夜族的神秘世界</p>
+          </div>
         </router-link>
-        <router-link to="/page/仙灵" class="hw-card home-quick-card">
-          <h3 class="hw-card-title">仙灵</h3>
-          <p class="hw-mono">了解仙灵的优雅本质</p>
+        <router-link to="/page/仙灵" class="hw-card hw-card-platform home-quick-card">
+          <span class="hw-card-arc"></span>
+          <div class="hw-card-wash"></div>
+          <div class="hw-card-platform-content">
+            <h3 class="hw-card-title">仙灵</h3>
+            <p class="hw-mono">了解仙灵的优雅本质</p>
+          </div>
         </router-link>
-        <router-link to="/page/龙族" class="hw-card home-quick-card">
-          <h3 class="hw-card-title">龙族</h3>
-          <p class="hw-mono">龙族的威严与力量</p>
+        <router-link to="/page/龙族" class="hw-card hw-card-platform home-quick-card">
+          <span class="hw-card-arc"></span>
+          <div class="hw-card-wash"></div>
+          <div class="hw-card-platform-content">
+            <h3 class="hw-card-title">龙族</h3>
+            <p class="hw-mono">龙族的威严与力量</p>
+          </div>
         </router-link>
-        <router-link to="/page/神圣" class="hw-card home-quick-card">
-          <h3 class="hw-card-title">神圣本源</h3>
-          <p class="hw-mono">神圣力量的奥秘</p>
+        <router-link to="/page/神圣" class="hw-card hw-card-platform home-quick-card">
+          <span class="hw-card-arc"></span>
+          <div class="hw-card-wash"></div>
+          <div class="hw-card-platform-content">
+            <h3 class="hw-card-title">神圣本源</h3>
+            <p class="hw-mono">神圣力量的奥秘</p>
+          </div>
         </router-link>
       </div>
     </section>

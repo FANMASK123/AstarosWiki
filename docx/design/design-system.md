@@ -383,3 +383,502 @@ related_sources:
 | `--color-*` (黑底) | `--color-*` (蓝底 `#0000f2`) | 暗色模式背景色变更 |
 
 > ⚠️ v1.0 类名在迁移期间保留兼容，所有旧类添加 `@deprecated` 注释。新代码必须使用 `hw-*` 前缀。
+
+---
+
+# 官方站实现深度解析
+
+> 基于 [hermes-agent.nousresearch.com](https://hermes-agent.nousresearch.com/) 首页完整 DOM/CSS 逆向分析。
+> 以下每个模式均标注了源码证据和在我们的 Vue 3 + Element Plus 环境中的适配方案。
+
+---
+
+## 1. 流体缩放系统
+
+### 官方实现
+
+```css
+.hermes-web {
+  --u: calc(100cqw / 2360);           /* 基准：2360px 设计稿 → 1u = 1px */
+  --hw-gutter: calc(210 * var(--u));  /* 页边距 = 210px @2360px 宽 */
+  --hw-gap: calc(30 * var(--u));      /* 间距 = 30px */
+}
+
+@media (max-width: 767px) {
+  .hermes-web {
+    --u: calc(100cqw / 760);          /* 移动端基准 760px */
+    --hw-gutter: calc(48 * var(--u));
+  }
+}
+```
+
+**原理**：`container-type: inline-size` + `cqw` 使页面所有尺寸（margin, padding, font-size, gap）随视口宽度线性缩放。2360px 宽时 1u=1px，1180px 时 1u=0.5px。
+
+### 适配到 AstarosWiki
+
+```css
+/* 我们的主题已实现简化版 */
+:root { --u: calc(100cqw / 2360); }
+```
+
+**待深化**：将 `padding: 24px` 替换为 `padding: calc(24 * var(--u))`；将 `gap: 16px` 替换为 `gap: calc(16 * var(--u))`。
+
+---
+
+## 2. 全局半透明 + 混合模式
+
+### 官方实现
+
+```css
+/* 按钮 hover — 亮色文字按钮在暗色背景上变白 */
+.bg-hermes-fg { background: #f5f5f5; }
+.hover\:bg-white:hover { background: #fff; }
+
+/* 英雄图 — 混合到蓝色背景中 */
+.mix-blend-lighten { mix-blend-mode: lighten; }
+
+/* 卡片噪声 — 屏幕混合微弱的噪点 */
+.mix-blend-screen { mix-blend-mode: screen; opacity: 0.04; }
+
+/* 半透明边框 — 不使用 rgba，使用 color-mix 或直接透明色 */
+--color-border: #f8fafc21;  /* 13% 不透明度 */
+```
+
+### 适配到 AstarosWiki
+
+```css
+/* 我们的主题已实现 */
+[data-theme='dark'] {
+  --color-card: rgba(255,255,255,0.06);  /* 半透明卡片 */
+  --color-border: rgba(245,245,245,0.15); /* 半透明边框 */
+}
+.hw-card::after { mix-blend-mode: screen; opacity: 0.06; } /* hover 噪声 */
+```
+
+---
+
+## 3. 噪声纹理覆盖层
+
+### 官方实现
+
+官方站使用两种噪声纹理：
+
+**全局噪声**（固定覆盖层）：
+```css
+.noise-overlay {
+  position: fixed; inset: 0; z-index: 101;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,..."); /* SVG turbulence filter */
+  background-size: 512px 512px;
+}
+[data-theme='dark'] .noise-overlay {
+  mix-blend-mode: screen;
+  opacity: 0.06;
+}
+```
+
+**卡片噪声**（`group-hover` 触发）：
+```css
+.download-card {
+  background-image: url(...); /* 平台艺术图 */
+}
+.download-card-wash {
+  /* 半透明遮罩层，让图片变暗 */
+  background: color-mix(in srgb, var(--color-background) 46%, transparent);
+}
+.download-arc {
+  /* 装饰弧线 */
+  border: 1px solid color-mix(in srgb, var(--color-foreground) 35%, transparent);
+  border-bottom-color: transparent;
+  border-radius: 999px 999px 0 0;
+}
+```
+
+### 适配到 AstarosWiki
+
+已在 `hermes-theme.css` 实现全局噪声和卡片 hover 噪声。待实现：卡片装饰弧线。
+
+```css
+/* 待添加到 .hw-card */
+.hw-card-arc {
+  position: absolute; inset: 11%;
+  border: 1px solid var(--color-muted);
+  border-bottom-color: transparent;
+  border-radius: 999px 999px 0 0;
+  opacity: 0.25;
+  transition: opacity 300ms;
+}
+.hw-card:hover .hw-card-arc { opacity: 0.45; }
+```
+
+---
+
+## 4. 排版模式
+
+### 官方实现
+
+| 用途 | 字体 | 字重 | 大小 | 行高 | 字间距 |
+|------|------|:--:|------|:--:|:--:|
+| Hero 标题 | Sigurd | 300 | `calc(132 * var(--u))` | 0.88 | 0.03em |
+| 区域标题 | Sigurd | 300 | `calc(64 * var(--u))` | 1 | — |
+| 标签文字 | Courier Prime | 400 | `var(--hw-text-eyebrow)` | — | 0.18em |
+| 正文 | Courier Prime | 400 | `var(--hw-text-body)` | 1.4 | — |
+| 导航链接 | Sigurd | 800 | `clamp(0.8rem, calc(22 * var(--u)), 1.35rem)` | — | 0.03em |
+
+**关键细节**：
+- Hero 标题不是一行，而是 **竖排多个 `<span>`**，每个单词一行
+- 所有文字 **全大写** (`text-transform: uppercase`)
+- 标题使用 **light 字重**（300），不是 bold
+- 正文使用 **Courier Prime**（等宽字体），不是无衬线
+
+### 适配到 AstarosWiki
+
+```html
+<!-- Hero 标题 — 已在 Home.vue 实现 -->
+<h1 class="hw-hero-title">
+  <span>阿斯塔洛斯</span>
+  <span>Wiki</span>
+</h1>
+
+<!-- 正文 — 保持 Segoe UI，Wiki 内容不适合 Courier -->
+<p class="hw-mono">元信息使用等宽</p>
+```
+
+---
+
+## 5. 平台下载卡片
+
+### 官方实现
+
+```html
+<article class="group relative flex min-h-[21rem] flex-col items-center justify-center overflow-hidden border p-8 text-center">
+  <!-- 背景图片 + 缩放动效 -->
+  <img class="absolute inset-0 h-full w-full object-cover opacity-45 transition duration-500 group-hover:scale-105 group-hover:opacity-60" />
+  <!-- 半透明遮罩 -->
+  <div class="absolute inset-0 bg-[color-mix(in_srgb,var(--color-background)_46%,transparent)]"></div>
+  <!-- 装饰弧线 -->
+  <span class="absolute inset-[11%] border border-[color-mix(in_srgb,var(--color-foreground)_35%,transparent)] border-b-transparent rounded-[999px_999px_0_0] opacity-55 translate-y-[18%]"></span>
+  <!-- 内容 -->
+  <div class="relative z-10 flex flex-col items-center gap-6">
+    <p>macOS 12+</p>
+    <h3 class="text-6xl">Mac OS</h3>
+    <a class="bg-foreground text-background px-6 py-4">前往下载</a>
+  </div>
+</article>
+```
+
+### 适配到 AstarosWiki
+
+用于首页"快捷入口"卡片，替换纯色卡片为图片背景卡片：
+
+```html
+<router-link to="/page/夜族" class="hw-card hw-card-platform">
+  <div class="hw-card-wash"></div>
+  <span class="hw-card-arc"></span>
+  <div class="hw-card-platform-content">
+    <h3 class="hw-card-title">夜族</h3>
+    <p class="hw-mono">探索夜族的神秘世界</p>
+  </div>
+</router-link>
+```
+
+```css
+.hw-card-platform {
+  min-height: 240px;
+  background-image: var(--hw-platform-img, none);
+  background-size: cover;
+  background-position: center;
+}
+.hw-card-wash {
+  position: absolute; inset: 0;
+  background: color-mix(in srgb, var(--color-background) 46%, transparent);
+}
+.hw-card-platform-content {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  height: 100%;
+}
+```
+
+---
+
+## 6. 终端安装命令块
+
+### 官方实现
+
+```html
+<div class="border rounded-[4px] bg-white">
+  <!-- Tab 栏 -->
+  <div class="flex border-b px-4 pt-3" role="tablist">
+    <button class="border-b-2 border-hermes text-hermes font-bold">macOS / Linux</button>
+    <button class="border-transparent text-hermes/45">Windows</button>
+  </div>
+  <!-- 命令内容 -->
+  <div class="px-4 py-3">
+    <code>
+      <span class="text-hermes/45">curl </span>
+      <span class="text-hermes font-bold">-fsSL https://...install.sh</span>
+      <span class="text-hermes/45"> | bash</span>
+    </code>
+    <button aria-label="Copy">📋</button>
+  </div>
+</div>
+```
+
+### 适配到 AstarosWiki
+
+用于 API 文档展示或安装指南：
+
+```html
+<div class="hw-terminal">
+  <div class="hw-terminal-tabs">
+    <button class="hw-terminal-tab active">cURL</button>
+    <button class="hw-terminal-tab">Python</button>
+  </div>
+  <div class="hw-terminal-body">
+    <code>curl -X POST http://localhost:8801/api/auth/login ...</code>
+    <button class="hw-terminal-copy" @click="copy">📋</button>
+  </div>
+</div>
+```
+
+```css
+.hw-terminal {
+  border: 1px solid var(--color-border);
+  background: var(--color-card);
+  overflow: hidden;
+}
+.hw-terminal-tabs {
+  display: flex; gap: 0; border-bottom: 1px solid var(--color-border);
+}
+.hw-terminal-tab {
+  padding: 10px 18px; font-family: var(--font-mono); font-size: 0.75rem;
+  border: none; border-bottom: 2px solid transparent; background: none;
+  color: var(--color-muted); cursor: pointer; transition: all 150ms;
+}
+.hw-terminal-tab.active {
+  color: var(--color-foreground); border-bottom-color: var(--color-foreground);
+  font-weight: 700;
+}
+.hw-terminal-body {
+  display: flex; align-items: center; padding: 14px 18px;
+  font-family: var(--font-mono); font-size: 0.85rem;
+}
+.hw-terminal-body code { flex: 1; }
+.hw-terminal-copy {
+  background: none; border: none; color: var(--color-muted);
+  cursor: pointer; padding: 4px; transition: color 150ms;
+}
+.hw-terminal-copy:hover { color: var(--color-foreground); }
+```
+
+---
+
+## 7. 视频预览框架
+
+### 官方实现
+
+```html
+<div class="relative aspect-[2174/1273] w-full overflow-hidden">
+  <video autoplay loop muted playsinline poster="showcase.webp" class="absolute inset-0 object-cover"></video>
+  <!-- 粗边框遮罩 -->
+  <div class="pointer-events-none absolute inset-0 border-[calc(55*var(--u))] mix-blend-lighten max-md:border-[16px]"></div>
+</div>
+```
+
+**关键技巧**：使用 `border-[calc(55*var(--u))]` 做视频的边框遮罩，混合模式 `lighten` 使边框色与背景融合。
+
+### 适配到 AstarosWiki
+
+用于首页展示截图或功能预览：
+
+```html
+<figure class="hw-preview">
+  <div class="hw-preview-frame">
+    <img :src="screenshot" class="hw-preview-img" />
+    <div class="hw-preview-border"></div>
+  </div>
+  <figcaption class="hw-mono">AstarosWiki 预览</figcaption>
+</figure>
+```
+
+```css
+.hw-preview-frame {
+  position: relative; aspect-ratio: 16/10; overflow: hidden;
+  border: 1px solid var(--color-border);
+}
+.hw-preview-img {
+  width: 100%; height: 100%; object-fit: cover;
+}
+.hw-preview-border {
+  position: absolute; inset: 0;
+  border: clamp(8px, 4vw, 55px) solid var(--color-background);
+  mix-blend-mode: lighten; pointer-events: none;
+}
+```
+
+---
+
+## 8. 数字编号板块
+
+### 官方实现
+
+六大功能板块使用 `#1` ~ `#6` 编号，每个板块包含：
+- 编号标签（mono, uppercase, tracked）
+- 大标题（light weight, uppercase）
+- 图片（mix-blend-screen）
+- 描述文字（mono, body size）
+
+```html
+<article>
+  <p class="hw-mono tracking-[0.18em] opacity-80">#1 Connect</p>
+  <h2 class="text-[calc(64*var(--u))] leading-none font-light">Lives Everywhere</h2>
+  <div class="aspect-[666/574] bg-hermes overflow-hidden">
+    <img class="mix-blend-screen object-cover" />
+  </div>
+  <p class="hw-mono leading-[1.4] opacity-90">Telegram, Discord, Slack...</p>
+</article>
+```
+
+### 适配到 AstarosWiki
+
+用于首页功能展示或管理后台 Dashboard：
+
+```html
+<article class="hw-feature">
+  <div class="hw-feature-header">
+    <p class="hw-eyebrow">#1 创作</p>
+    <h2 class="hw-section-title">页面管理</h2>
+  </div>
+  <div class="hw-feature-visual">
+    <img src="..." class="hw-feature-img" />
+  </div>
+  <p class="hw-mono">创建、编辑、审核 Wiki 页面，支持 Markdown 和版本历史。</p>
+</article>
+```
+
+---
+
+## 9. Footer 巨幅文字
+
+### 官方实现
+
+```html
+<div class="text-center text-[clamp(6rem,22vw,22rem)] uppercase leading-none opacity-90">Hermes</div>
+```
+
+巨幅品牌文字作为视觉收尾，使用超大 `clamp` 值（最大 22rem），`leading-none` 紧凑排列。
+
+### 适配到 AstarosWiki
+
+```html
+<div class="hw-footer-wordmark">阿斯塔洛斯</div>
+```
+
+```css
+.hw-footer-wordmark {
+  font-size: clamp(3rem, 15vw, 15rem);
+  font-weight: 300; text-transform: uppercase;
+  line-height: 0.85; letter-spacing: 0.02em;
+  text-align: center; opacity: 0.15;
+  margin-top: 4rem; pointer-events: none; user-select: none;
+}
+```
+
+---
+
+## 10. 边框分隔模式
+
+### 官方实现
+
+导航栏每个链接之间用 `border-r border-border` 分隔，而非传统间距：
+
+```html
+<nav class="flex items-stretch">
+  <a class="border-r border-border px-4">功能</a>
+  <a class="border-r border-border px-4">桌面版</a>
+  <a class="border-r border-border px-4">文档</a>
+  <a class="px-4">GitHub</a>  <!-- 最后一个无边线 -->
+</nav>
+```
+
+### 适配到 AstarosWiki
+
+已在 `hw-nav-link` 实现：`border-right: 1px solid var(--color-border)`。
+
+---
+
+## 11. `color-mix()` 透明度技巧
+
+### 官方实现
+
+官方站大量使用 `color-mix(in srgb, ...)` 而非 `rgba()` 或 `opacity`：
+
+```css
+/* 半透明前景色 — 替代 opacity: 0.45 */
+color: color-mix(in srgb, var(--color-foreground) 45%, transparent);
+
+/* 半透明背景 — 替代 rgba(255,255,255,0.06) */
+background: color-mix(in srgb, var(--color-background) 46%, transparent);
+
+/* 半透明边框 — 替代 rgba(245,245,245,0.15) */
+border-color: color-mix(in srgb, var(--color-foreground) 15%, transparent);
+```
+
+**优势**：`color-mix()` 可以精确控制混合比例，且支持 CSS 变量动态计算，而 `rgba()` 只能硬编码颜色。
+
+### 适配到 AstarosWiki
+
+```css
+/* 替换现有的 rgba 写法 */
+[data-theme='dark'] {
+  --color-card: color-mix(in srgb, var(--color-foreground) 6%, transparent);
+  --color-border: color-mix(in srgb, var(--color-foreground) 15%, transparent);
+  --color-muted: color-mix(in srgb, var(--color-foreground) 55%, transparent);
+}
+```
+
+---
+
+## 12. 导航结构
+
+### 官方实现
+
+导航不使用 `justify-between` 的传统布局，而是 **绝对定位 + 分散摆放**：
+
+```
+[Nous] ────────── [Hermes Agent] ────────── [Portal] [Install→]
+ 左链接              居中 Logo               右链接 + CTA
+```
+
+```html
+<nav class="absolute inset-x-0 top-0 z-20 flex items-start justify-between px-gutter pt-12">
+  <a>Nous</a>
+  <a>Docs</a>
+  <div class="flex flex-col items-center">
+    <a>Hermes<br/>Agent</a>
+    <span> <!-- Discord + GitHub icons --> </span>
+  </div>
+  <a>Portal</a>
+  <a class="inline-flex items-center gap-2">Install →</a>
+</nav>
+```
+
+**关键**：导航链接不放在同一行，而是 `justify-between` 分散到两侧和中间。
+
+---
+
+## 技术债务 / 待实现清单
+
+| # | 模式 | 状态 | 优先级 |
+|---|------|:--:|:--:|
+| 1 | 流体缩放 `--u` 全面铺开 | ⚠️ 仅 CSS 变量定义，未在间距中使用 | P1 |
+| 2 | `color-mix()` 替换 `rgba()` | ❌ 未实现 | P1 |
+| 3 | 平台下载卡片样式 | ❌ 未实现 | P2 |
+| 4 | 终端命令块组件 | ❌ 未实现 | P2 |
+| 5 | 视频/图片预览边框遮罩 | ❌ 未实现 | P3 |
+| 6 | 数字编号板块 | ❌ 未实现 | P3 |
+| 7 | Footer 巨幅文字 | ❌ 未实现 | P3 |
+| 8 | 卡片装饰弧线 | ❌ 未实现 | P3 |

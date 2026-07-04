@@ -103,6 +103,7 @@
           <p>Astaros Wiki · 基于 Vue 3 + Spring Boot 构建</p>
           <p>MIT License · 2026</p>
         </div>
+        <div class="hw-footer-wordmark">阿斯塔洛斯</div>
       </div>
     </footer>
 

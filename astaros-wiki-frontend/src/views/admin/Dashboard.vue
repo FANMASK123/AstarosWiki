@@ -78,16 +78,16 @@ const recentLogs = ref<OperationLog[]>([])
 onMounted(async () => { await loadPendingRequests(); await loadRecentLogs() })
 
 async function loadPendingRequests() {
-  try { const r = await getPendingRequests(0, 5); if (r.code === 200) pendingRequests.value = r.data.content } catch {}
+  try { const r = await getPendingRequests(0, 5); if (r.code === 200) pendingRequests.value = r.data.content } catch (e) { console.error(e) }
 }
 async function loadRecentLogs() {
-  try { const r = await getOperationLogs(0, 10); if (r.code === 200) recentLogs.value = r.data.content } catch {}
+  try { const r = await getOperationLogs(0, 10); if (r.code === 200) recentLogs.value = r.data.content } catch (e) { console.error(e) }
 }
 async function handleApprove(id: number) {
-  try { await approveRequest(id); ElMessage.success('已通过'); await loadPendingRequests() } catch {}
+  try { await approveRequest(id); ElMessage.success('已通过'); await loadPendingRequests() } catch (e) { console.error(e) }
 }
 async function handleReject(id: number) {
-  try { await rejectRequest(id); ElMessage.success('已拒绝'); await loadPendingRequests() } catch {}
+  try { await rejectRequest(id); ElMessage.success('已拒绝'); await loadPendingRequests() } catch (e) { console.error(e) }
 }
 function formatDate(d: string) { return new Date(d).toLocaleDateString('zh-CN') }
 </script>

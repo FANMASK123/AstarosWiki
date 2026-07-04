@@ -44,9 +44,7 @@
     </footer>
 
     <MobileMenu />
-
-    <button v-if="userStore.isLoggedIn()" class="mailbox-trigger" @click="mailOpen=!mailOpen">✉</button>
-    <div v-if="mailOpen && userStore.isLoggedIn()" class="mailbox-panel"><Mailbox @close="mailOpen=false" /></div>
+    <Mailbox v-if="userStore.isLoggedIn()" />
   </div>
 </template>
 
@@ -60,7 +58,7 @@ import Mailbox from './components/Mailbox.vue'
 import MobileMenu from './components/MobileMenu.vue'
 
 const router = useRouter(); const userStore = useUserStore()
-const kw = ref(''); const mailOpen = ref(false); const t = ref<'dark'|'light'>('dark')
+const kw = ref(''); const t = ref<'dark'|'light'>('dark')
 
 onMounted(() => { const s = localStorage.getItem('hermes-theme'); if (s === 'light') set('light'); else set('dark') })
 function set(v:'dark'|'light') { t.value = v; document.documentElement.setAttribute('data-theme',v); localStorage.setItem('hermes-theme',v) }

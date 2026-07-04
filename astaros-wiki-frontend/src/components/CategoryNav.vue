@@ -1,56 +1,55 @@
 <template>
-  <div class="sidebar-cat">
-    <div v-if="categoryStore.loading" class="loading"><div class="spinner"></div></div>
-    <div v-else-if="categories.length===0" style="padding:16px"><span class="text-muted">暂无分类</span></div>
-    <ul v-else class="sc-root">
-      <li v-for="c in categories" :key="c.id" class="sc-node">
-        <div class="sc-row" :class="{ active: l1?.id === c.id }">
-          <router-link :to="`/category/${c.id}`" class="sc-link" @click="emit('navigate')">
-            <span class="sc-label">{{ c.name }}</span>
-            <span v-if="c.children?.length" class="sc-count">{{ c.children.length }}</span>
-          </router-link>
-          <button v-if="c.children?.length" class="sc-arrow" :class="{ open: l1?.id === c.id }" @click.stop="toggleL1(c)" title="展开">▸</button>
-        </div>
-
-        <!-- L2 slide panel -->
-        <Transition name="sc-slide">
-          <div v-if="l1?.id === c.id && c.children?.length" class="sc-l2-panel">
-            <div class="sc-l2-header">
-              <span class="sc-l2-title">{{ c.name }}</span>
-              <button class="sc-close" @click="l1=null;l2=null">✕</button>
-            </div>
-            <ul class="sc-l2-list">
-              <li v-for="ch in c.children" :key="ch.id">
-                <div class="sc-row sc-row--l2" :class="{ active: l2?.id === ch.id }">
-                  <router-link :to="`/category/${ch.id}`" class="sc-link" @click="emit('navigate')">
-                    <span class="sc-label">{{ ch.name }}</span>
-                    <span v-if="ch.children?.length" class="sc-count">{{ ch.children.length }}</span>
+  <div style="height:100%;display:flex;flex-direction:column">
+    <div style="padding:10px 14px;border-bottom:1px solid var(--border)">
+      <span class="eyebrow">功能菜单</span>
+    </div>
+    <div style="flex:1;overflow-y:auto">
+      <div v-if="categoryStore.loading" class="loading"><div class="spinner"></div></div>
+      <div v-else-if="categories.length===0" style="padding:16px"><span class="text-muted">暂无</span></div>
+      <ul v-else class="sm-root">
+        <li class="sm-node">
+          <div class="sm-row" @click="catOpen = !catOpen">
+            <span class="sm-label">分类导航</span>
+            <span :class="['sm-arrow', catOpen && 'open']">▸</span>
+          </div>
+          <Transition name="sm-slide">
+            <ul v-if="catOpen" class="sm-dropdown">
+              <li v-for="c in categories" :key="c.id">
+                <div class="sm-row sm-sub" @click="toggle(c)">
+                  <router-link :to="`/category/${c.id}`" class="sm-link" @click.stop>
+                    <span class="sm-name">{{ c.name }}</span>
+                    <span v-if="c.children?.length" class="sm-count">{{ c.children.length }}</span>
                   </router-link>
-                  <button v-if="ch.children?.length" class="sc-arrow" :class="{ open: l2?.id === ch.id }" @click.stop="toggleL2(ch)" title="展开">▸</button>
+                  <button v-if="c.children?.length" :class="['sm-arrow', open1.has(c.id) && 'open']" @click.stop="toggle(c)">▸</button>
                 </div>
-
-                <!-- L3 slide panel -->
-                <Transition name="sc-slide">
-                  <div v-if="l2?.id === ch.id && ch.children?.length" class="sc-l3-panel">
-                    <div class="sc-l2-header">
-                      <span class="sc-l2-title">{{ ch.name }}</span>
-                      <button class="sc-close" @click="l2=null">✕</button>
-                    </div>
-                    <ul class="sc-l2-list">
-                      <li v-for="gc in ch.children" :key="gc.id">
-                        <router-link :to="`/category/${gc.id}`" class="sc-row sc-row--l3" @click="emit('navigate')">
-                          <span class="sc-link"><span class="sc-label">{{ gc.name }}</span></span>
+                <Transition name="sm-slide">
+                  <ul v-if="c.children?.length && open1.has(c.id)" class="sm-dropdown sm-l2">
+                    <li v-for="ch in c.children" :key="ch.id">
+                      <div class="sm-row sm-sub">
+                        <router-link :to="`/category/${ch.id}`" class="sm-link" @click.stop>
+                          <span class="sm-name">{{ ch.name }}</span>
+                          <span v-if="ch.children?.length" class="sm-count">{{ ch.children.length }}</span>
                         </router-link>
-                      </li>
-                    </ul>
-                  </div>
+                        <button v-if="ch.children?.length" :class="['sm-arrow', open2.has(ch.id) && 'open']" @click.stop="t2(ch)">▸</button>
+                      </div>
+                      <Transition name="sm-slide">
+                        <ul v-if="ch.children?.length && open2.has(ch.id)" class="sm-dropdown sm-l3">
+                          <li v-for="gc in ch.children" :key="gc.id">
+                            <router-link :to="`/category/${gc.id}`" class="sm-row sm-sub sm-link">
+                              <span class="sm-name">{{ gc.name }}</span>
+                            </router-link>
+                          </li>
+                        </ul>
+                      </Transition>
+                    </li>
+                  </ul>
                 </Transition>
               </li>
             </ul>
-          </div>
-        </Transition>
-      </li>
-    </ul>
+          </Transition>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
@@ -59,54 +58,43 @@ import { ref, onMounted, computed } from 'vue'
 import { useCategoryStore } from '../stores/category'
 import type { CategoryDTO } from '../api/category'
 
-const emit = defineEmits<{ navigate: [] }>()
 const categoryStore = useCategoryStore()
-const l1 = ref<CategoryDTO | null>(null)
-const l2 = ref<CategoryDTO | null>(null)
+const catOpen = ref(false)
+const open1 = ref(new Set<number>())
+const open2 = ref(new Set<number>())
 const categories = computed(() => categoryStore.categories)
 
 onMounted(async () => { await categoryStore.fetchCategories() })
 
-function toggleL1(c: CategoryDTO) {
-  if (l1.value?.id === c.id) { l1.value = null; l2.value = null }
-  else { l1.value = c; l2.value = null }
+function toggle(c: CategoryDTO) {
+  if (open1.value.has(c.id)) open1.value.delete(c.id); else open1.value.add(c.id)
+  open1.value = new Set(open1.value)
 }
-function toggleL2(c: CategoryDTO) {
-  l2.value = l2.value?.id === c.id ? null : c
+function t2(c: CategoryDTO) {
+  if (open2.value.has(c.id)) open2.value.delete(c.id); else open2.value.add(c.id)
+  open2.value = new Set(open2.value)
 }
 </script>
 
 <style scoped>
-.sidebar-cat { height: 100%; display: flex; flex-direction: column; }
-.sc-root { list-style: none; padding: 0; margin: 0; flex: 1; overflow-y: auto; }
-.sc-node { border-bottom: 1px solid color-mix(in srgb, var(--fg) 4%, transparent); }
-.sc-node:last-child { border-bottom: none; }
-.sc-row { display: flex; align-items: center; min-height: 34px; cursor: pointer; transition: background .12s; }
-.sc-row:hover { background: color-mix(in srgb, var(--fg) 4%, transparent); }
-.sc-row.active { background: color-mix(in srgb, var(--fg) 6%, transparent); }
-.sc-link { flex: 1; display: flex; align-items: center; gap: 4px; padding: 6px 10px; font-size: 12px; color: var(--fg); text-decoration: none; min-width: 0; }
-.sc-label { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sc-count { font-family: var(--mono); font-size: 9px; color: var(--muted); background: color-mix(in srgb, var(--fg) 6%, transparent); padding: 1px 4px; flex-shrink: 0; }
-.sc-arrow { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; background: none; border: none; color: var(--muted); cursor: pointer; flex-shrink: 0; font-size: 8px; transition: transform .2s, color .15s; margin-right: 2px; }
-.sc-arrow:hover { color: var(--fg); }
-.sc-arrow.open { transform: rotate(90deg); }
+.sm-root { list-style: none; padding: 0; margin: 0; }
+.sm-node { border-bottom: 1px solid color-mix(in srgb, var(--fg) 4%, transparent); }
+.sm-row { display: flex; align-items: center; min-height: 32px; cursor: pointer; padding: 0 6px; transition: background .12s; }
+.sm-row:hover { background: color-mix(in srgb, var(--fg) 4%, transparent); }
+.sm-label { flex: 1; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; padding: 6px 8px; color: var(--fg); }
+.sm-arrow { width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; background: none; border: none; color: var(--muted); cursor: pointer; flex-shrink: 0; font-size: 8px; transition: transform .2s, color .15s; }
+.sm-arrow:hover { color: var(--fg); }
+.sm-arrow.open { transform: rotate(90deg); }
+.sm-sub { padding-left: 4px; }
+.sm-link { flex: 1; display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--fg); text-decoration: none; padding: 5px 2px; min-width: 0; }
+.sm-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sm-count { font-family: var(--mono); font-size: 8px; color: var(--muted); background: color-mix(in srgb, var(--fg) 5%, transparent); padding: 1px 3px; }
 
-/* L2 panel — slides in from right within sidebar */
-.sc-l2-panel { position: absolute; left: 200px; top: 52px; bottom: 0; width: 220px; background: var(--card); border-right: 1px solid var(--border); z-index: 35; display: flex; flex-direction: column; overflow: hidden; }
-.sc-l2-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; border-bottom: 1px solid var(--border); background: var(--bg); flex-shrink: 0; }
-.sc-l2-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--fg); }
-.sc-close { background: none; border: none; font-size: 12px; color: var(--muted); cursor: pointer; padding: 2px 4px; transition: color .15s; }
-.sc-close:hover { color: var(--fg); }
-.sc-l2-list { list-style: none; padding: 0; margin: 0; flex: 1; overflow-y: auto; }
-.sc-row--l2 { padding-left: 4px; }
-.sc-row--l3 { padding-left: 12px; }
+.sm-dropdown { list-style: none; padding: 0; margin: 0; border-top: 1px solid color-mix(in srgb, var(--fg) 3%, transparent); background: color-mix(in srgb, var(--fg) 1.5%, transparent); overflow: hidden; }
+.sm-l2 { background: color-mix(in srgb, var(--fg) 2%, transparent); padding-left: 10px; }
+.sm-l3 { background: color-mix(in srgb, var(--fg) 2.5%, transparent); padding-left: 10px; }
 
-/* L3 panel — slides from right of L2 */
-.sc-l3-panel { position: absolute; left: 220px; top: 0; bottom: 0; width: 200px; background: var(--card); border-right: 1px solid var(--border); z-index: 36; display: flex; flex-direction: column; overflow: hidden; }
-
-/* Slide transitions */
-.sc-slide-enter-active { transition: all .2s ease-out; }
-.sc-slide-leave-active { transition: all .12s ease-in; }
-.sc-slide-enter-from { opacity: 0; transform: translateX(-12px); }
-.sc-slide-leave-to { opacity: 0; transform: translateX(-12px); }
+.sm-slide-enter-active { transition: all .18s ease-out; overflow: hidden; }
+.sm-slide-leave-active { transition: all .12s ease-in; overflow: hidden; }
+.sm-slide-enter-from, .sm-slide-leave-to { opacity: 0; max-height: 0; }
 </style>

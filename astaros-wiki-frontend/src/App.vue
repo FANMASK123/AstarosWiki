@@ -1,6 +1,6 @@
 <template>
   <div id="app" class="app-shell">
-    <!-- <div class="starfield"></div> -->
+    <div class="starfield"></div>
 
     <header class="app-header">
       <router-link to="/" class="app-header-brand">阿斯塔洛斯 Wiki</router-link>
@@ -26,12 +26,12 @@
     </header>
 
     <div class="app-main">
-      <aside class="app-sidebar"><Sidebar /></aside>
       <main class="app-content">
         <router-view v-slot="{ Component }">
           <Transition name="page" mode="out-in"><component :is="Component" /></Transition>
         </router-view>
       </main>
+      <aside class="app-sidebar"><Sidebar /></aside>
     </div>
 
     <footer class="app-footer">

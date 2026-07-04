@@ -11,6 +11,8 @@ import java.util.Optional;
 public interface CategoryRepository extends JpaRepository<Category, Long> {
     List<Category> findByParentIdIsNullOrderBySortOrder();
     List<Category> findByParentIdOrderBySortOrder(Long parentId);
+    List<Category> findByParentIdIsNull();
+    List<Category> findByParentId(Long parentId);
     Optional<Category> findByName(String name);
     boolean existsByName(String name);
 }

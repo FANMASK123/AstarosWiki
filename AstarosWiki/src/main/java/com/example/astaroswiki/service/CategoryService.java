@@ -9,18 +9,23 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
 
+    private static final int MAX_CATEGORY_LEVEL = 3;
     private final CategoryRepository categoryRepository;
+    private final Collator chineseCollator = Collator.getInstance(Locale.CHINA);
 
     public List<CategoryDTO> getAllCategories() {
-        List<Category> rootCategories = categoryRepository.findByParentIdIsNullOrderBySortOrder();
+        List<Category> rootCategories = categoryRepository.findByParentIdIsNull();
         return buildCategoryTree(rootCategories);
     }
 
@@ -28,7 +33,7 @@ public class CategoryService {
         Category category = categoryRepository.findById(id)
             .orElseThrow(() -> new BusinessException("分类不存在"));
         CategoryDTO dto = convertToDTO(category);
-        List<Category> children = categoryRepository.findByParentIdOrderBySortOrder(id);
+        List<Category> children = categoryRepository.findByParentId(id);
         if (!children.isEmpty()) {
             dto.setChildren(children.stream().map(this::convertToDTO).collect(Collectors.toList()));
         }
@@ -42,8 +47,12 @@ public class CategoryService {
         }
 
         if (request.getParentId() != null) {
-            categoryRepository.findById(request.getParentId())
+            Category parent = categoryRepository.findById(request.getParentId())
                 .orElseThrow(() -> new BusinessException("父分类不存在"));
+            int level = getCategoryLevel(parent);
+            if (level >= MAX_CATEGORY_LEVEL) {
+                throw new BusinessException("分类最多支持三级");
+            }
         }
 
         Category category = new Category();
@@ -69,8 +78,12 @@ public class CategoryService {
             if (request.getParentId().equals(id)) {
                 throw new BusinessException("不能将自己设置为父分类");
             }
-            categoryRepository.findById(request.getParentId())
+            Category parent = categoryRepository.findById(request.getParentId())
                 .orElseThrow(() -> new BusinessException("父分类不存在"));
+            int level = getCategoryLevel(parent);
+            if (level >= MAX_CATEGORY_LEVEL) {
+                throw new BusinessException("分类最多支持三级");
+            }
         }
 
         category.setName(request.getName());
@@ -87,7 +100,7 @@ public class CategoryService {
         Category category = categoryRepository.findById(id)
             .orElseThrow(() -> new BusinessException("分类不存在"));
 
-        List<Category> children = categoryRepository.findByParentIdOrderBySortOrder(id);
+        List<Category> children = categoryRepository.findByParentId(id);
         if (!children.isEmpty()) {
             throw new BusinessException("该分类下还有子分类，无法删除");
         }
@@ -95,11 +108,24 @@ public class CategoryService {
         categoryRepository.delete(category);
     }
 
+    private int getCategoryLevel(Category category) {
+        int level = 1;
+        Long parentId = category.getParentId();
+        while (parentId != null) {
+            Category parent = categoryRepository.findById(parentId).orElse(null);
+            if (parent == null) break;
+            level++;
+            parentId = parent.getParentId();
+        }
+        return level;
+    }
+
     private List<CategoryDTO> buildCategoryTree(List<Category> categories) {
         return categories.stream()
+            .sorted(Comparator.comparing(Category::getName, chineseCollator))
             .map(category -> {
                 CategoryDTO dto = convertToDTO(category);
-                List<Category> children = categoryRepository.findByParentIdOrderBySortOrder(category.getId());
+                List<Category> children = categoryRepository.findByParentId(category.getId());
                 if (!children.isEmpty()) {
                     dto.setChildren(buildCategoryTree(children));
                 }

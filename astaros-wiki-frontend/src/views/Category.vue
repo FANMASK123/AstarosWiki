@@ -4,64 +4,44 @@
     <template v-else-if="display">
       <p class="eyebrow">分类</p>
       <h1 class="section-title">{{ display.name }}</h1>
-      <p v-if="display.description" class="text-muted" style="margin-bottom:20px">{{ display.description }}</p>
+      <p v-if="display.description" class="text-muted mb-24">{{ display.description }}</p>
 
-      <!-- Three-level horizontal tab navigation -->
-      <div v-if="hasTabs" class="cat-tabs">
-        <!-- Level 1 tabs -->
-        <div class="cat-l1">
-          <button
-            v-for="t in l1Tabs"
-            :key="t.id"
-            class="cat-btn cat-btn--l1"
-            :class="{ active: selectedL1 === t.id }"
-            @click="selectL1(t)"
-          >{{ t.name }}</button>
-        </div>
-
-        <!-- Level 2 tabs (below selected L1) -->
-        <Transition name="cat-expand">
-          <div v-if="selectedL1 && l2Tabs.length" class="cat-l2">
-            <button
-              v-for="t in l2Tabs"
-              :key="t.id"
-              class="cat-btn cat-btn--l2"
-              :class="{ active: selectedL2 === t.id }"
-              @click="selectL2(t)"
-            >{{ t.name }}</button>
-          </div>
-        </Transition>
-
-        <!-- Level 3 tabs (below selected L2) -->
-        <Transition name="cat-expand">
-          <div v-if="selectedL2 && l3Tabs.length" class="cat-l3">
-            <button
-              v-for="t in l3Tabs"
-              :key="t.id"
-              class="cat-btn cat-btn--l3"
-              @click="router.push(`/category/${t.id}`)"
-            >{{ t.name }}</button>
-          </div>
-        </Transition>
+      <!-- Level 1 tabs: full-width bar -->
+      <div v-if="l1Tabs.length > 1" class="cat-bar cat-bar--l1">
+        <button v-for="t in l1Tabs" :key="t.id"
+          class="cat-tab cat-tab--l1" :class="{ active: t.id === selectedL1 }"
+          @click="selectL1(t)">{{ t.name }}</button>
       </div>
 
-      <!-- Page list -->
+      <!-- Level 2 tabs: same full width, slides in -->
+      <Transition name="cat-in">
+        <div v-if="l2Tabs.length > 1" class="cat-bar cat-bar--l2">
+          <button v-for="t in l2Tabs" :key="t.id"
+            class="cat-tab cat-tab--l2" :class="{ active: t.id === selectedL2 }"
+            @click="selectL2(t)">{{ t.name }}</button>
+        </div>
+      </Transition>
+
+      <!-- Level 3 tabs -->
+      <Transition name="cat-in">
+        <div v-if="l3Tabs.length > 1" class="cat-bar cat-bar--l3">
+          <button v-for="t in l3Tabs" :key="t.id"
+            class="cat-tab cat-tab--l3"
+            @click="router.push(`/category/${t.id}`)">{{ t.name }}</button>
+        </div>
+      </Transition>
+
       <div class="divider"></div>
+
+      <!-- Page list -->
       <div v-if="pages.length" class="stack">
         <router-link v-for="p in pages" :key="p.id" :to="`/page/${p.slug}`" class="card">
           <div class="card-title">{{ p.title }}</div>
-          <div class="row mt-8">
-            <span class="mono">{{ p.authorName }}</span>
-            <span class="mono">{{ fmt(p.updatedAt) }}</span>
-          </div>
+          <div class="row mt-8"><span class="mono">{{ p.authorName }}</span><span class="mono">{{ fmt(p.updatedAt) }}</span></div>
         </router-link>
       </div>
-      <div v-else class="empty">
-        <h2 class="section-title">暂无页面</h2>
-        <p class="text-muted">该分类下暂未发布页面</p>
-      </div>
+      <div v-else class="empty"><h2 class="section-title">暂无页面</h2><p class="text-muted">该分类下暂未发布页面</p></div>
 
-      <!-- Pagination -->
       <div v-if="totalPages>1" class="pagination-row">
         <button class="btn btn-ghost" :disabled="cur===0" @click="go(cur-1)">←</button>
         <span class="mono">{{ cur+1 }}/{{ totalPages }}</span>
@@ -88,53 +68,46 @@ const cur = ref(0); const totalPages = ref(0)
 const selectedL1 = ref<number>(0)
 const selectedL2 = ref<number>(0)
 
-// Recursively find a category in the tree by ID
+const display = computed(() => parent.value || cat.value)
+
+// Recursive tree search
 function findInTree(id: number, nodes: CategoryDTO[]): CategoryDTO | null {
   for (const n of nodes) {
     if (n.id === id) return n
-    if (n.children?.length) {
-      const found = findInTree(id, n.children)
-      if (found) return found
-    }
+    if (n.children?.length) { const f = findInTree(id, n.children); if (f) return f }
   }
   return null
 }
 
-const display = computed(() => parent.value || cat.value)
-const hasTabs = computed(() => l1Tabs.value.length > 1)
-
-// L1 tabs: siblings of the current category (or top-level if none)
+// L1: siblings (or parent's children if leaf) + "全部" as first
 const l1Tabs = computed((): CategoryDTO[] => {
-  const all = parent.value?.children || cat.value?.children || []
-  if (all.length === 0 && parent.value) {
-    // Show parent's children as L1
-    return parent.value.children || []
-  }
-  // If we're viewing a child with no children, show its parent
-  if (cat.value?.parentId && all.length === 0 && parent.value?.children) {
-    return parent.value.children
-  }
-  // Add "全部" header
-  const current = parent.value || cat.value
-  if (current && all.length > 0) {
-    return [{ id: current.id, name: '全部', parentId: current.parentId } as CategoryDTO, ...all]
-  }
-  return all
+  const tree = categoryStore.categories
+  const node = findInTree(cat.value?.id || 0, tree)
+  if (!node) return []
+  // Find parent in tree
+  const p = node.parentId ? findInTree(node.parentId, tree) : null
+  const siblings = p?.children || tree // parent's children, or root-level if no parent
+  if (siblings.length <= 1) return []
+  const all: CategoryDTO = { id: node.id, name: '全部', parentId: node.parentId } as CategoryDTO
+  return [all, ...siblings.filter((s: CategoryDTO) => s.id !== node.id)]
 })
 
+// L2: children of selected L1
 const l2Tabs = computed((): CategoryDTO[] => {
   if (!selectedL1.value) return []
-  const tree = categoryStore.categories
-  const target = findInTree(selectedL1.value, tree)
-  if (!target?.children?.length) return []
-  return [{ id: target.id, name: '全部', parentId: target.parentId } as CategoryDTO, ...target.children]
+  const node = findInTree(selectedL1.value, categoryStore.categories)
+  if (!node?.children?.length) return []
+  const all: CategoryDTO = { id: node.id, name: '全部', parentId: node.parentId } as CategoryDTO
+  return [all, ...node.children]
 })
 
+// L3: children of selected L2
 const l3Tabs = computed((): CategoryDTO[] => {
   if (!selectedL2.value) return []
-  const tree = categoryStore.categories
-  const target = findInTree(selectedL2.value, tree)
-  return target?.children || []
+  const node = findInTree(selectedL2.value, categoryStore.categories)
+  if (!node?.children?.length) return []
+  const all: CategoryDTO = { id: node.id, name: '全部', parentId: node.parentId } as CategoryDTO
+  return [all, ...node.children]
 })
 
 onMounted(async () => { await categoryStore.fetchCategories(); await load(Number(route.params.id)) })
@@ -143,8 +116,10 @@ watch(() => route.params.id, async (v) => { cur.value = 0; await load(Number(v))
 async function load(id: number) {
   loading.value = true
   try {
-    const r = await getCategoryById(id); if (r.code===200) { cat.value = r.data; parent.value = null; if (cat.value.parentId) { const pr = await getCategoryById(cat.value.parentId); if (pr.code===200) parent.value = pr.data } }
-    const pr = await getPagesByCategory(id, cur.value, 10); if (pr.code===200) { pages.value = pr.data.content; totalPages.value = pr.data.totalPages }
+    const r = await getCategoryById(id)
+    if (r.code===200) { cat.value = r.data; parent.value = r.data.parentId ? (await getCategoryById(r.data.parentId)).data : null }
+    const pr = await getPagesByCategory(id, cur.value, 10)
+    if (pr.code===200) { pages.value = pr.data.content; totalPages.value = pr.data.totalPages }
     selectedL1.value = id; selectedL2.value = 0
   } catch(e) { console.error(e) } finally { loading.value = false }
 }
@@ -158,43 +133,43 @@ function fmt(d: string) { return new Date(d).toLocaleDateString('zh-CN') }
 <style scoped>
 .cat-page { max-width: 1400px; }
 
-/* Tab containers */
-.cat-tabs { margin-bottom: 8px; }
-.cat-l1 { display: flex; flex-wrap: wrap; gap: 0; border-bottom: 2px solid var(--border); }
-.cat-l2 { display: flex; flex-wrap: wrap; gap: 4px; padding: 8px 0; border-bottom: 1px solid color-mix(in srgb, var(--fg) 6%, transparent); }
-.cat-l3 { display: flex; flex-wrap: wrap; gap: 4px; padding: 6px 0; }
+/* Bars — all same full width */
+.cat-bar { display: flex; flex-wrap: wrap; gap: 0; width: 100%; padding: 8px 0; }
+.cat-bar--l1 { border-bottom: 2px solid var(--border); }
+.cat-bar--l2 { border-bottom: 1px solid color-mix(in srgb, var(--fg) 5%, transparent); }
+.cat-bar--l3 { padding: 4px 0; }
 
-/* Tab buttons */
-.cat-btn {
+/* Tabs */
+.cat-tab {
   font-family: var(--mono); text-transform: uppercase; letter-spacing: .06em;
-  background: none; cursor: pointer; transition: all .15s; border: none; white-space: nowrap;
+  background: none; cursor: pointer; border: none; white-space: nowrap; transition: all .15s;
 }
-.cat-btn--l1 {
-  flex: 0 0 auto; padding: 8px 16px; font-size: 11px; font-weight: 600;
+.cat-tab--l1 {
+  flex: 1; padding: 10px 16px; font-size: 12px; font-weight: 600;
   color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -2px;
 }
-.cat-btn--l1:hover { color: var(--fg); }
-.cat-btn--l1.active { color: var(--fg); border-bottom-color: var(--fg); }
+.cat-tab--l1:hover { color: var(--fg); }
+.cat-tab--l1.active { color: var(--fg); border-bottom-color: var(--fg); }
 
-.cat-btn--l2 {
-  padding: 5px 12px; font-size: 10px; font-weight: 500;
-  color: var(--muted); border: 1px solid var(--border);
+.cat-tab--l2 {
+  flex: 1; padding: 8px 12px; font-size: 11px; font-weight: 500;
+  color: var(--muted); border: 1px solid var(--border); margin: 2px;
 }
-.cat-btn--l2:hover { color: var(--fg); border-color: var(--muted); transform: translateY(-1px); }
-.cat-btn--l2.active { color: var(--fg); border-color: var(--fg); background: color-mix(in srgb, var(--fg) 8%, transparent); }
-[data-theme='dark'] .cat-btn--l2.active { background: color-mix(in srgb, var(--fg) 12%, transparent); }
-[data-theme='light'] .cat-btn--l2.active { background: color-mix(in srgb, var(--fg) 8%, transparent); }
+.cat-tab--l2:hover { color: var(--fg); border-color: var(--muted); transform: translateY(-1px); }
+.cat-tab--l2.active { color: var(--fg); border-color: var(--fg); }
+[data-theme='dark'] .cat-tab--l2.active { background: color-mix(in srgb, var(--fg) 12%, transparent); }
+[data-theme='light'] .cat-tab--l2.active { background: color-mix(in srgb, var(--fg) 8%, transparent); }
 
-.cat-btn--l3 {
-  padding: 4px 10px; font-size: 10px;
-  color: var(--muted); border: 1px solid color-mix(in srgb, var(--fg) 8%, transparent);
+.cat-tab--l3 {
+  flex: 1; padding: 6px 10px; font-size: 10px;
+  color: var(--muted); border: 1px solid color-mix(in srgb, var(--fg) 6%, transparent); margin: 2px;
   background: color-mix(in srgb, var(--fg) 2%, transparent);
 }
-.cat-btn--l3:hover { color: var(--fg); border-color: var(--fg); transform: translateY(-1px); }
+.cat-tab--l3:hover { color: var(--fg); border-color: var(--fg); transform: translateY(-1px); }
 
-/* Expand transition */
-.cat-expand-enter-active { transition: all .2s ease-out; overflow: hidden; }
-.cat-expand-leave-active { transition: all .12s ease-in; overflow: hidden; }
-.cat-expand-enter-from, .cat-expand-leave-to { opacity: 0; max-height: 0; }
-.cat-expand-enter-to, .cat-expand-leave-from { max-height: 120px; }
+/* Animations */
+.cat-in-enter-active { transition: all .2s ease-out; overflow: hidden; }
+.cat-in-leave-active { transition: all .12s ease-in; overflow: hidden; }
+.cat-in-enter-from, .cat-in-leave-to { opacity: 0; max-height: 0; }
+.cat-in-enter-to, .cat-in-leave-from { max-height: 80px; }
 </style>

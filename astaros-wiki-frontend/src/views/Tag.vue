@@ -1,22 +1,22 @@
 <template>
   <div>
-    <div class="classic-card">
-      <div class="classic-card-title">标签：{{ tagName }}</div>
-      <div class="classic-card-content">包含该标签的所有页面</div>
+    <div class="hw-card">
+      <div class="hw-eyebrow">标签：{{ tagName }}</div>
+      <div class="hw-card-content">包含该标签的所有页面</div>
     </div>
 
     <div v-if="loading">加载中...</div>
     <div v-else-if="pages.length === 0">
       <el-empty description="该标签下暂无页面" />
     </div>
-    <ul v-else class="classic-list">
-      <li v-for="page in pages" :key="page.id" class="classic-list-item">
+    <ul v-else class="hw-list">
+      <li v-for="page in pages" :key="page.id" class="hw-list-item">
         <router-link
           :to="`/page/${page.slug}`"
-          style="color: var(--classic-accent-primary); text-decoration: none"
+          style="color: var(--var(--color-foreground)); text-decoration: none"
         >
           <div style="font-weight: bold; font-size: 18px">{{ page.title }}</div>
-          <div style="color: var(--classic-text-secondary); font-size: 14px">
+          <div style="color: var(--var(--color-muted)); font-size: 14px">
             {{ page.categoryName || '未分类' }} | 作者：{{ page.authorName }} |
             {{ formatDate(page.updatedAt) }}
           </div>
@@ -24,7 +24,7 @@
       </li>
     </ul>
 
-    <div v-if="totalPages > 1" class="classic-pagination">
+    <div v-if="totalPages > 1" class="hw-pagination">
       <el-button :disabled="currentPage === 0" @click="handlePageChange(currentPage - 1)">
         上一页
       </el-button>

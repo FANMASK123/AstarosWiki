@@ -45,8 +45,8 @@ import { Plus, Edit, Document } from '@element-plus/icons-vue'
 }
 
 .page-center-nav {
-  background-color: var(--classic-bg-card);
-  border-bottom: 1px solid var(--classic-border);
+  background-color: var(--var(--color-card));
+  border-bottom: 1px solid var(--var(--color-border));
   position: sticky;
   top: 56px;
   z-index: 90;
@@ -66,19 +66,19 @@ import { Plus, Edit, Document } from '@element-plus/icons-vue'
   gap: 6px;
   padding: 8px 16px;
   border-radius: 6px;
-  color: var(--classic-text-secondary);
+  color: var(--var(--color-muted));
   text-decoration: none;
   font-size: 14px;
   transition: all 0.2s;
 }
 
 .page-center-nav-item:hover {
-  background-color: var(--classic-bg-secondary);
-  color: var(--classic-text-primary);
+  background-color: var(--color-mix(in srgb, var(--color-foreground) 4%, transparent));
+  color: var(--var(--color-foreground));
 }
 
 .page-center-nav-item.active {
-  background-color: var(--classic-accent-primary);
+  background-color: var(--var(--color-foreground));
   color: white;
 }
 

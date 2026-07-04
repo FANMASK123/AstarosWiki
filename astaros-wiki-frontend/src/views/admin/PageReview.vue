@@ -1,8 +1,8 @@
 <template>
-  <div v-if="loading" class="classic-card">加载中...</div>
+  <div v-if="loading" class="hw-card">加载中...</div>
   <div v-else-if="page" class="review-page">
     <div class="review-page-header">
-      <router-link to="/admin/pages" class="navbar-link" style="margin-right: 16px">
+      <router-link to="/admin/pages" class="hw-nav-link" style="margin-right: 16px">
         <el-icon><ArrowLeft /></el-icon>
         返回列表
       </router-link>
@@ -14,13 +14,13 @@
 
     <div class="review-content">
       <div class="review-content-left">
-        <div class="classic-card">
+        <div class="hw-card">
           <div style="margin-bottom: 16px">
-            <span class="classic-tag" v-if="page.categoryName">{{ page.categoryName }}</span>
-            <span class="classic-tag" v-for="tag in page.tags" :key="tag">{{ tag }}</span>
+            <span class="hw-tag" v-if="page.categoryName">{{ page.categoryName }}</span>
+            <span class="hw-tag" v-for="tag in page.tags" :key="tag">{{ tag }}</span>
           </div>
 
-          <div style="color: var(--classic-text-secondary); font-size: 14px; margin-bottom: 24px">
+          <div style="color: var(--var(--color-muted)); font-size: 14px; margin-bottom: 24px">
             作者：{{ page.authorName }} | 版本：{{ page.version }} | 浏览：{{ page.viewCount }}次 |
             创建时间：{{ formatDate(page.createdAt) }} | 更新时间：{{ formatDate(page.updatedAt) }}
           </div>
@@ -36,16 +36,16 @@
             style="
               margin-top: 16px;
               padding: 12px;
-              background-color: var(--classic-bg-secondary);
+              background-color: var(--color-mix(in srgb, var(--color-foreground) 4%, transparent));
               border-radius: 8px;
             "
           >
             <div
-              style="font-weight: bold; color: var(--classic-accent-primary); margin-bottom: 4px"
+              style="font-weight: bold; color: var(--var(--color-foreground)); margin-bottom: 4px"
             >
               草稿状态
             </div>
-            <div style="color: var(--classic-text-secondary)">
+            <div style="color: var(--var(--color-muted))">
               {{ page.draftStatus === 'SAVED' ? '已保存（待提交审核）' : '待审核' }}
             </div>
             <div v-if="page.rejectReason" style="color: #f56c6c; margin-top: 8px">
@@ -56,11 +56,11 @@
       </div>
 
       <div class="review-content-right">
-        <div class="classic-card review-panel">
+        <div class="hw-card review-panel">
           <h3 class="review-panel-title">{{ isPublished ? '管理操作' : '审核操作' }}</h3>
 
           <div v-if="!isPublished" style="margin-bottom: 16px">
-            <div style="font-size: 13px; color: var(--classic-text-secondary); margin-bottom: 8px">
+            <div style="font-size: 13px; color: var(--var(--color-muted)); margin-bottom: 8px">
               审核意见（将发送给创作者）
             </div>
             <textarea
@@ -85,7 +85,7 @@
           </div>
 
           <div v-if="isPublished" style="margin-bottom: 16px">
-            <div style="font-size: 13px; color: var(--classic-text-secondary); margin-bottom: 8px">
+            <div style="font-size: 13px; color: var(--var(--color-muted)); margin-bottom: 8px">
               修改建议（将发送给创作者）
             </div>
             <textarea
@@ -130,9 +130,9 @@
 
           <div
             v-if="page.draftStatus === 'SAVED'"
-            style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--classic-border)"
+            style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--var(--color-border))"
           >
-            <div style="color: var(--classic-text-secondary); font-size: 13px">
+            <div style="color: var(--var(--color-muted)); font-size: 13px">
               <el-icon><InfoFilled /></el-icon>
               当前页面为保存态，尚未提交审核。点击"批准"将直接发布该页面。
             </div>
@@ -140,9 +140,9 @@
 
           <div
             v-if="isPublished"
-            style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--classic-border)"
+            style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--var(--color-border))"
           >
-            <div style="color: var(--classic-text-secondary); font-size: 13px">
+            <div style="color: var(--var(--color-muted)); font-size: 13px">
               <el-icon><InfoFilled /></el-icon>
               当前页面已发布。点击"发送建议"将向创作者发送修改建议，点击"下架"将取消发布状态并通知创作者。
             </div>
@@ -151,7 +151,7 @@
       </div>
     </div>
   </div>
-  <div v-else class="classic-card">
+  <div v-else class="hw-card">
     <el-empty description="页面不存在" />
   </div>
 </template>
@@ -308,7 +308,7 @@ const formatDate = (date: string) => {
 
 .review-page-title {
   font-size: 24px;
-  color: var(--classic-text-primary);
+  color: var(--var(--color-foreground));
   margin: 0;
 }
 
@@ -343,12 +343,12 @@ const formatDate = (date: string) => {
 }
 
 .document-scroll::-webkit-scrollbar-track {
-  background: var(--classic-bg-secondary);
+  background: var(--color-mix(in srgb, var(--color-foreground) 4%, transparent));
   border-radius: 3px;
 }
 
 .document-scroll::-webkit-scrollbar-thumb {
-  background: var(--classic-accent-primary);
+  background: var(--var(--color-foreground));
   border-radius: 3px;
 }
 
@@ -362,7 +362,7 @@ const formatDate = (date: string) => {
   word-wrap: break-word;
   line-height: 1.6;
   font-size: 15px;
-  color: var(--classic-text-primary);
+  color: var(--var(--color-foreground));
 }
 
 .review-panel {
@@ -371,8 +371,8 @@ const formatDate = (date: string) => {
 
 .review-panel-title {
   font-size: 16px;
-  color: var(--classic-text-primary);
-  border-bottom: 2px solid var(--classic-accent-primary);
+  color: var(--var(--color-foreground));
+  border-bottom: 2px solid var(--var(--color-foreground));
   padding-bottom: 8px;
   margin-bottom: 16px;
 }

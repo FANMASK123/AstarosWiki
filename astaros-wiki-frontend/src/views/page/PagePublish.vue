@@ -285,7 +285,7 @@ onMounted(() => {
 .page-publish-header h2 {
   font-size: 20px;
   font-weight: 600;
-  color: var(--classic-text-primary);
+  color: var(--var(--color-foreground));
   margin: 0;
 }
 
@@ -294,7 +294,7 @@ onMounted(() => {
   align-items: center;
   gap: 12px;
   font-size: 14px;
-  color: var(--classic-text-secondary);
+  color: var(--var(--color-muted));
 }
 
 .loading {
@@ -308,7 +308,7 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   padding: 60px 0;
-  color: var(--classic-text-secondary);
+  color: var(--var(--color-muted));
 }
 
 .empty p {
@@ -320,7 +320,7 @@ onMounted(() => {
 }
 
 .page-title-link {
-  color: var(--classic-accent-primary);
+  color: var(--var(--color-foreground));
   text-decoration: none;
 }
 
@@ -329,7 +329,7 @@ onMounted(() => {
 }
 
 .btn-edit {
-  color: var(--classic-accent-primary);
+  color: var(--var(--color-foreground));
   font-size: 12px;
   padding: 4px 8px;
 }

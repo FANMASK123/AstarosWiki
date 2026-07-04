@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="classic-card-title">分类管理</div>
+    <div class="hw-eyebrow">分类管理</div>
 
     <el-button type="primary" :icon="Plus" @click="handleCreate" style="margin-bottom: 16px">
       新建分类
@@ -18,7 +18,7 @@
         >
           <div>
             <span style="font-weight: bold">{{ data.name }}</span>
-            <span style="color: var(--classic-text-secondary); font-size: 14px; margin-left: 8px">
+            <span style="color: var(--var(--color-muted)); font-size: 14px; margin-left: 8px">
               {{ data.description || '暂无描述' }}
             </span>
           </div>

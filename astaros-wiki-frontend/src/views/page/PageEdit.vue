@@ -1,10 +1,10 @@
 <template>
   <div>
-    <div class="classic-card">
-      <div class="classic-card-title">
+    <div class="hw-card">
+      <div class="hw-eyebrow">
         {{ isEdit ? '编辑页面' : '创建页面' }}
       </div>
-      <div class="classic-card-content">
+      <div class="hw-card-content">
         <el-form :model="pageForm" label-width="100px">
           <el-form-item label="标题">
             <el-input v-model="pageForm.title" />
@@ -291,14 +291,14 @@ const formatDate = (date: string) => {
 
 .history-item {
   padding: 16px;
-  border: 1px solid var(--classic-border);
+  border: 1px solid var(--var(--color-border));
   border-radius: 8px;
-  background-color: var(--classic-bg-card);
+  background-color: var(--var(--color-card));
 }
 
 .history-item.current {
-  border-color: var(--classic-accent-primary);
-  background-color: rgba(var(--classic-accent-primary-rgb), 0.1);
+  border-color: var(--var(--color-foreground));
+  background-color: rgba(var(--var(--color-foreground)-rgb), 0.1);
 }
 
 .version-header {
@@ -315,14 +315,14 @@ const formatDate = (date: string) => {
 
 .current-badge {
   padding: 2px 8px;
-  background-color: var(--classic-accent-primary);
+  background-color: var(--var(--color-foreground));
   color: white;
   border-radius: 4px;
   font-size: 12px;
 }
 
 .version-date {
-  color: var(--classic-text-secondary);
+  color: var(--var(--color-muted));
   font-size: 14px;
 }
 
@@ -335,7 +335,7 @@ const formatDate = (date: string) => {
   max-height: 60vh;
   overflow-y: auto;
   padding: 16px;
-  background-color: var(--classic-bg-secondary);
+  background-color: var(--color-mix(in srgb, var(--color-foreground) 4%, transparent));
   border-radius: 8px;
 }
 

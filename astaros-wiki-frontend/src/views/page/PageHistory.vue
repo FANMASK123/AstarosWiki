@@ -1,17 +1,17 @@
 <template>
-  <div class="classic-card">
-    <div class="classic-card-title">页面历史版本</div>
+  <div class="hw-card">
+    <div class="hw-eyebrow">页面历史版本</div>
 
     <div v-if="loading">加载中...</div>
     <div v-else-if="versions.length === 0">
       <el-empty description="暂无历史版本" />
     </div>
-    <ul v-else class="classic-list">
-      <li v-for="version in versions" :key="version.id" class="classic-list-item">
+    <ul v-else class="hw-list">
+      <li v-for="version in versions" :key="version.id" class="hw-list-item">
         <div style="display: flex; justify-content: space-between; align-items: center">
           <div>
             <div style="font-weight: bold">版本 {{ version.versionNumber }}</div>
-            <div style="color: var(--classic-text-secondary); font-size: 14px">
+            <div style="color: var(--var(--color-muted)); font-size: 14px">
               编辑者：{{ version.editorId }} | {{ formatDate(version.createdAt) }}
             </div>
           </div>
@@ -31,7 +31,7 @@
     </ul>
 
     <el-dialog v-model="versionDialogVisible" title="版本内容" width="80%">
-      <div class="classic-card-content" style="white-space: pre-wrap">
+      <div class="hw-card-content" style="white-space: pre-wrap">
         {{ currentVersionContent }}
       </div>
     </el-dialog>

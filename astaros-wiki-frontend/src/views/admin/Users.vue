@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="classic-card-title">用户管理</div>
+    <div class="hw-eyebrow">用户管理</div>
 
     <el-table :data="users" style="width: 100%">
       <el-table-column prop="id" label="ID" width="80" />
@@ -57,7 +57,7 @@
       </el-table-column>
     </el-table>
 
-    <div class="classic-pagination">
+    <div class="hw-pagination">
       <el-button :disabled="currentPage === 0" @click="handlePageChange(currentPage - 1)">
         上一页
       </el-button>

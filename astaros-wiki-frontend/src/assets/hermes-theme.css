@@ -31,7 +31,7 @@ a{color:inherit;text-decoration:none}
 
 /* ── Starfield Background (dark mode) ───────────────── */
 #app{position:relative}
-.starfield{pointer-events:none;position:fixed;inset:-40px;z-index:0;overflow:hidden;display:none;transform:translate(calc(var(--mx,0)*4px),calc(var(--my,0)*4px))}
+.starfield{pointer-events:none;position:fixed;inset:0;z-index:0;overflow:hidden;display:none;transform:translate(calc(var(--mx,0)*4px),calc(var(--my,0)*4px))}
 [data-theme='dark'] .starfield{display:block}
 .starfield::before,.starfield::after{content:'';position:absolute;inset:0;background:transparent;animation:drift 120s linear infinite}
 .starfield::before{

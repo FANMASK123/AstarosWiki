@@ -75,7 +75,7 @@
         分类「<strong style="color:var(--fg)">{{ deleteTarget?.name }}</strong>」下有页面，请选择迁移目标：
       </p>
       <el-select v-model="migrateToId" placeholder="选择目标分类" style="width:100%">
-        <el-option v-for="t in getMigrateTargets()" :key="t.id" :label="t.name" :value="t.id" />
+        <el-option v-for="t in migrateTargets" :key="t.id" :label="t.name" :value="t.id" />
       </el-select>
       <template #footer>
         <button class="btn btn-ghost" @click="migrationVisible = false">取消</button>
@@ -267,7 +267,7 @@ async function handleMigrate() {
 }
 
 // Filter categories for migration (exclude self + descendants)
-function getMigrateTargets(): CategoryDTO[] {
+const migrateTargets = computed((): CategoryDTO[] => {
   const results: CategoryDTO[] = []
   function walk(nodes: CategoryDTO[], skipId: number) {
     for (const n of nodes) {
@@ -276,7 +276,7 @@ function getMigrateTargets(): CategoryDTO[] {
   }
   walk(categoryStore.categories, deleteTarget.value?.id || 0)
   return results
-}
+})
 </script>
 
 <style scoped>

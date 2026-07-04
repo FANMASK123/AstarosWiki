@@ -10,21 +10,7 @@
       </div>
     </section>
 
-    <div class="grid-2 mb-24">
-      <div>
-        <p class="eyebrow">浏览</p>
-        <h2 class="section-title">分类导航</h2>
-        <div v-if="categoryStore.loading" class="skeleton">
-          <div class="skel-line skel-w75"></div><div class="skel-line skel-w50"></div><div class="skel-line skel-w100"></div>
-        </div>
-        <div v-else class="stack">
-          <div v-for="c in categoryStore.categories" :key="c.id" class="card" style="cursor:pointer" @click="router.push(`/category/${c.id}`)">
-            <div class="card-title">{{ c.name }}</div>
-            <p class="mono">{{ c.description || '暂无描述' }}</p>
-            <span v-if="c.children?.length" class="badge mt-16">{{ c.children.length }} 子类</span>
-          </div>
-        </div>
-      </div>
+    <div class="mb-24">
       <div>
         <p class="eyebrow">最新</p>
         <h2 class="section-title">最近更新</h2>
@@ -56,13 +42,9 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useCategoryStore } from '../stores/category'
 import { usePageStore } from '../stores/page'
 import { useUserStore } from '../stores/user'
 
-const router = useRouter()
-const categoryStore = useCategoryStore()
 const pageStore = usePageStore()
 const userStore = useUserStore()
 
@@ -73,6 +55,6 @@ const quickLinks = [
   { slug: '神圣', name: '神圣本源', desc: '神圣力量的奥秘' },
 ]
 
-onMounted(() => { categoryStore.fetchCategories(); pageStore.fetchRecentPages() })
+onMounted(() => { pageStore.fetchRecentPages() })
 function fmt(d: string) { return new Date(d).toLocaleDateString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric' }) }
 </script>

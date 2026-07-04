@@ -73,7 +73,7 @@ a{color:inherit;text-decoration:none}
     90vw 84vh 2px rgba(180,200,255,.5), 5vw 90vh 1px rgba(180,200,255,.4), 12vw 96vh 1px rgba(180,200,255,.6), 19vw 92vh 2px rgba(180,200,255,.3);
     animation:drift 80s linear infinite reverse;
 }
-@keyframes drift{0%{transform:translateY(0)}100%{transform:translateY(-80px)}}
+@keyframes drift{0%{transform:translateY(0)}100%{transform:translateY(-160px)}}
 
 /* Stream lines */
 .starfield-line{pointer-events:none;position:fixed;inset:0;z-index:0;display:none;background:radial-gradient(ellipse at var(--mx,50%) var(--my,50%),rgba(180,200,255,.04) 0%,transparent 60%);}

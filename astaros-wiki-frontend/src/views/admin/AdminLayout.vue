@@ -14,12 +14,12 @@
 </template>
 
 <style scoped>
-.admin-layout{display:flex;min-height:80vh}
-.admin-nav{width:200px;flex-shrink:0;background:var(--card);border-right:1px solid var(--border)}
+.admin-layout{display:flex;min-height:calc(100vh - 52px)}
+.admin-nav{width:200px;flex-shrink:0;background:var(--card);border-right:1px solid var(--border);overflow-y:auto}
+.admin-content{flex:1;padding:24px 32px;overflow-y:auto;overflow-x:auto}
 .admin-nav-link{display:flex;align-items:center;gap:10px;padding:12px 20px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);border-bottom:1px solid var(--border);transition:color .15s,background .15s}
 .admin-nav-link:hover{color:var(--fg);background:color-mix(in srgb,var(--fg) 4%,transparent)}
 .admin-nav-link.active{color:var(--fg);background:color-mix(in srgb,var(--fg) 8%,transparent)}
 .admin-nav-num{font-family:var(--mono);font-size:11px;opacity:.5}
-.admin-content{flex:1;padding:24px 32px;overflow-x:auto}
 @media(max-width:768px){.admin-nav{display:none}.admin-content{padding:16px 12px}}
 </style>

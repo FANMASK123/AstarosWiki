@@ -217,6 +217,11 @@ const handleSave = async () => {
 
 const handleDelete = async (category: CategoryDTO) => {
   try {
+    // First confirm
+    await ElMessageBox.confirm(`确定要删除分类"${category.name}"吗？`, '确认删除', {
+      confirmButtonText: '删除', cancelButtonText: '取消', type: 'warning',
+    })
+
     // Check if category has children
     if (category.children?.length) {
       ElMessage.warning('该分类下有子分类，请先删除子分类')
@@ -231,16 +236,11 @@ const handleDelete = async (category: CategoryDTO) => {
     } catch { /* ignore */ }
 
     if (hasPages) {
-      // Show migration dialog
       deleteTarget.value = category
       migrationVisible.value = true
       return
     }
 
-    // Direct delete
-    await ElMessageBox.confirm(`确定要删除分类"${category.name}"吗？`, '确认删除', {
-      confirmButtonText: '删除', cancelButtonText: '取消', type: 'warning',
-    })
     const res = await deleteCategory(category.id)
     if (res.code === 200) { ElMessage.success('删除成功'); await categoryStore.fetchCategories() }
     else ElMessage.error(res.msg || '删除失败')

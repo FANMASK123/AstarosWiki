@@ -132,7 +132,7 @@ async function load(id:number){
 
 function goTab(t:CategoryDTO){ router.push(`/category/${t.id}`) }
 function goL2(t:CategoryDTO){ l2Active.value=l2Active.value===t.id?0:t.id }
-function goL3(_t:CategoryDTO){ /* L3 terminal — no navigation */ }
+function goL3(t:CategoryDTO){ router.push(`/category/${t.id}`) }
 async function go(p:number){ cur.value=p; await load(Number(route.params.id)) }
 function fmt(d:string){return new Date(d).toLocaleDateString('zh-CN')}
 </script>

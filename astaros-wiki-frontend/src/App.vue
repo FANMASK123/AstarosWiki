@@ -1,10 +1,7 @@
 <template>
   <div id="app" class="app-shell">
-    <div class="starfield">
-      <div class="starfield-layer"><div class="starfield-dot" style="left:15%;top:10%;width:2px;height:2px"></div><div class="starfield-dot" style="left:35%;top:25%;width:1px;height:1px"></div><div class="starfield-dot" style="left:55%;top:8%;width:2px;height:2px;background:rgba(255,255,255,.3)"></div><div class="starfield-dot" style="left:75%;top:30%;width:1px;height:1px"></div><div class="starfield-dot" style="left:20%;top:45%;width:2px;height:2px"></div><div class="starfield-dot" style="left:50%;top:50%;width:3px;height:3px;background:rgba(255,255,255,.7)"></div><div class="starfield-dot" style="left:80%;top:55%;width:1px;height:1px"></div><div class="starfield-dot" style="left:10%;top:70%;width:2px;height:2px"></div><div class="starfield-dot" style="left:40%;top:75%;width:1px;height:1px"></div><div class="starfield-dot" style="left:65%;top:65%;width:2px;height:2px;background:rgba(255,255,255,.3)"></div><div class="starfield-dot" style="left:90%;top:80%;width:1px;height:1px"></div><div class="starfield-dot" style="left:30%;top:90%;width:2px;height:2px"></div></div>
-      <div class="starfield-layer"><div class="starfield-dot" style="left:8%;top:15%;width:1px;height:1px"></div><div class="starfield-dot" style="left:28%;top:5%;width:2px;height:2px;background:rgba(200,220,255,.4)"></div><div class="starfield-dot" style="left:48%;top:20%;width:1px;height:1px"></div><div class="starfield-dot" style="left:68%;top:12%;width:2px;height:2px"></div><div class="starfield-dot" style="left:85%;top:35%;width:1px;height:1px"></div><div class="starfield-dot" style="left:12%;top:55%;width:2px;height:2px;background:rgba(200,220,255,.6)"></div><div class="starfield-dot" style="left:38%;top:42%;width:1px;height:1px"></div><div class="starfield-dot" style="left:58%;top:60%;width:2px;height:2px"></div><div class="starfield-dot" style="left:78%;top:48%;width:1px;height:1px"></div><div class="starfield-dot" style="left:22%;top:78%;width:2px;height:2px;background:rgba(200,220,255,.5)"></div><div class="starfield-dot" style="left:62%;top:85%;width:1px;height:1px"></div><div class="starfield-dot" style="left:92%;top:68%;width:2px;height:2px"></div></div>
-      <div class="starfield-layer"><div class="starfield-dot" style="left:18%;top:35%;width:1px;height:1px"></div><div class="starfield-dot" style="left:42%;top:18%;width:2px;height:2px"></div><div class="starfield-dot" style="left:72%;top:42%;width:1px;height:1px;background:rgba(220,230,255,.5)"></div><div class="starfield-dot" style="left:5%;top:62%;width:2px;height:2px"></div><div class="starfield-dot" style="left:32%;top:58%;width:1px;height:1px"></div><div class="starfield-dot" style="left:52%;top:38%;width:2px;height:2px;background:rgba(220,230,255,.4)"></div><div class="starfield-dot" style="left:82%;top:72%;width:1px;height:1px"></div><div class="starfield-dot" style="left:15%;top:85%;width:2px;height:2px"></div><div class="starfield-dot" style="left:45%;top:92%;width:1px;height:1px"></div></div>
-    </div>
+    <div class="starfield"></div>
+    <div class="starfield-line"></div>
 
     <header class="app-header">
       <router-link to="/" class="app-header-brand">阿斯塔洛斯 Wiki</router-link>
@@ -54,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from './stores/user'
 import { Search } from '@element-plus/icons-vue'
@@ -64,7 +61,9 @@ import Mailbox from './components/Mailbox.vue'
 const router = useRouter(); const userStore = useUserStore()
 const kw = ref(''); const mailOpen = ref(false); const t = ref<'dark'|'light'>('dark')
 
-onMounted(() => { const s = localStorage.getItem('hermes-theme'); if (s === 'light') set('light'); else set('dark') })
+onMounted(() => { const s = localStorage.getItem('hermes-theme'); if (s === 'light') set('light'); else set('dark'); document.addEventListener('mousemove', track) })
+onUnmounted(() => { document.removeEventListener('mousemove', track) })
+function track(e: MouseEvent) { const x = (e.clientX / window.innerWidth * 100).toFixed(1); const y = (e.clientY / window.innerHeight * 100).toFixed(1); document.documentElement.style.setProperty('--mx', x + '%'); document.documentElement.style.setProperty('--my', y + '%') }
 function set(v:'dark'|'light') { t.value = v; document.documentElement.setAttribute('data-theme',v); localStorage.setItem('hermes-theme',v) }
 function toggle() { set(t.value==='dark'?'light':'dark') }
 function search() { if (kw.value.trim()) { router.push({path:'/search',query:{keyword:kw.value.trim()}}); kw.value='' } }

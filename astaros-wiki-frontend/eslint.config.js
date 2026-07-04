@@ -33,6 +33,7 @@ export default tseslint.config(
         clearInterval: 'readonly',
         setTimeout: 'readonly',
         setInterval: 'readonly',
+        MouseEvent: 'readonly',
       },
     },
     rules: {

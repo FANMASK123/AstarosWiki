@@ -31,12 +31,53 @@ a{color:inherit;text-decoration:none}
 
 /* ── Starfield Background (dark mode) ───────────────── */
 #app{position:relative}
-.starfield{pointer-events:none;position:fixed;inset:-50%;z-index:0;overflow:hidden;display:none}
+.starfield{pointer-events:none;position:fixed;inset:-40px;z-index:0;overflow:hidden;display:none;transform:translate(calc(var(--mx,0)*4px),calc(var(--my,0)*4px))}
 [data-theme='dark'] .starfield{display:block}
-.starfield-layer{position:absolute;inset:0;transform-origin:50% 50%}
-.starfield-layer:nth-child(1){animation:star-rotate 180s linear infinite}
-.starfield-layer:nth-child(2){animation:star-rotate 120s linear infinite reverse}
-.starfield-layer:nth-child(3){animation:star-rotate 240s linear infinite}
+.starfield::before,.starfield::after{content:'';position:absolute;inset:0;background:transparent;animation:drift 120s linear infinite}
+.starfield::before{
+  box-shadow:
+    3vw 2vh 1px rgba(255,255,255,.7), 8vw 6vh 1px rgba(255,255,255,.5), 14vw 3vh 2px rgba(255,255,255,.4), 19vw 9vh 1px rgba(255,255,255,.6),
+    24vw 4vh 1px rgba(255,255,255,.3), 29vw 11vh 2px rgba(255,255,255,.5), 36vw 2vh 1px rgba(255,255,255,.6), 42vw 8vh 1px rgba(255,255,255,.4),
+    48vw 13vh 2px rgba(255,255,255,.3), 53vw 5vh 1px rgba(255,255,255,.7), 60vw 10vh 1px rgba(255,255,255,.5), 66vw 3vh 2px rgba(255,255,255,.4),
+    72vw 14vh 1px rgba(255,255,255,.6), 78vw 7vh 1px rgba(255,255,255,.3), 85vw 12vh 2px rgba(255,255,255,.5), 91vw 4vh 1px rgba(255,255,255,.6),
+    6vw 18vh 1px rgba(255,255,255,.5), 12vw 24vh 2px rgba(255,255,255,.3), 20vw 20vh 1px rgba(255,255,255,.6), 27vw 28vh 1px rgba(255,255,255,.4),
+    34vw 16vh 2px rgba(255,255,255,.5), 40vw 22vh 1px rgba(255,255,255,.3), 47vw 30vh 1px rgba(255,255,255,.6), 55vw 18vh 2px rgba(255,255,255,.4),
+    62vw 26vh 1px rgba(255,255,255,.5), 68vw 32vh 1px rgba(255,255,255,.3), 76vw 20vh 2px rgba(255,255,255,.6), 83vw 28vh 1px rgba(255,255,255,.4),
+    9vw 36vh 1px rgba(255,255,255,.5), 16vw 42vh 2px rgba(255,255,255,.3), 23vw 38vh 1px rgba(255,255,255,.6), 31vw 46vh 1px rgba(255,255,255,.4),
+    38vw 34vh 2px rgba(255,255,255,.5), 44vw 40vh 1px rgba(255,255,255,.3), 51vw 48vh 1px rgba(255,255,255,.6), 58vw 36vh 2px rgba(255,255,255,.4),
+    65vw 44vh 1px rgba(255,255,255,.5), 71vw 50vh 1px rgba(255,255,255,.3), 79vw 38vh 2px rgba(255,255,255,.6), 86vw 46vh 1px rgba(255,255,255,.4),
+    5vw 54vh 1px rgba(255,255,255,.5), 13vw 60vh 2px rgba(255,255,255,.3), 21vw 56vh 1px rgba(255,255,255,.6), 28vw 64vh 1px rgba(255,255,255,.4),
+    35vw 52vh 2px rgba(255,255,255,.5), 42vw 58vh 1px rgba(255,255,255,.3), 49vw 66vh 1px rgba(255,255,255,.6), 56vw 54vh 2px rgba(255,255,255,.4),
+    63vw 62vh 1px rgba(255,255,255,.5), 70vw 68vh 1px rgba(255,255,255,.3), 77vw 56vh 2px rgba(255,255,255,.6), 84vw 64vh 1px rgba(255,255,255,.4),
+    8vw 72vh 1px rgba(255,255,255,.5), 15vw 78vh 2px rgba(255,255,255,.3), 22vw 74vh 1px rgba(255,255,255,.6), 30vw 82vh 1px rgba(255,255,255,.4),
+    37vw 70vh 2px rgba(255,255,255,.5), 43vw 76vh 1px rgba(255,255,255,.3), 50vw 84vh 1px rgba(255,255,255,.6), 57vw 72vh 2px rgba(255,255,255,.4),
+    64vw 80vh 1px rgba(255,255,255,.5), 72vw 86vh 1px rgba(255,255,255,.3), 79vw 74vh 2px rgba(255,255,255,.6), 87vw 82vh 1px rgba(255,255,255,.4),
+    4vw 90vh 1px rgba(255,255,255,.5), 11vw 95vh 2px rgba(255,255,255,.3), 18vw 92vh 1px rgba(255,255,255,.6), 25vw 97vh 1px rgba(255,255,255,.4);
+}
+.starfield::after{
+  box-shadow:
+    1vw 1vh 2px rgba(180,200,255,.5), 7vw 4vh 1px rgba(180,200,255,.4), 12vw 7vh 1px rgba(180,200,255,.6), 18vw 2vh 2px rgba(180,200,255,.3),
+    23vw 8vh 1px rgba(180,200,255,.5), 30vw 5vh 1px rgba(180,200,255,.4), 37vw 11vh 2px rgba(180,200,255,.6), 43vw 6vh 1px rgba(180,200,255,.3),
+    49vw 15vh 1px rgba(180,200,255,.5), 56vw 9vh 2px rgba(180,200,255,.4), 62vw 13vh 1px rgba(180,200,255,.6), 69vw 4vh 1px rgba(180,200,255,.3),
+    75vw 16vh 2px rgba(180,200,255,.5), 82vw 10vh 1px rgba(180,200,255,.4), 89vw 14vh 1px rgba(180,200,255,.6), 95vw 7vh 2px rgba(180,200,255,.3),
+    2vw 22vh 1px rgba(180,200,255,.5), 9vw 28vh 2px rgba(180,200,255,.4), 16vw 24vh 1px rgba(180,200,255,.6), 22vw 32vh 1px rgba(180,200,255,.3),
+    29vw 20vh 2px rgba(180,200,255,.5), 36vw 28vh 1px rgba(180,200,255,.4), 42vw 34vh 1px rgba(180,200,255,.6), 50vw 22vh 2px rgba(180,200,255,.3),
+    57vw 30vh 1px rgba(180,200,255,.5), 63vw 36vh 1px rgba(180,200,255,.4), 70vw 24vh 2px rgba(180,200,255,.6), 77vw 32vh 1px rgba(180,200,255,.3),
+    84vw 38vh 1px rgba(180,200,255,.5), 91vw 26vh 2px rgba(180,200,255,.4), 3vw 44vh 1px rgba(180,200,255,.6), 10vw 50vh 1px rgba(180,200,255,.3),
+    17vw 46vh 2px rgba(180,200,255,.5), 24vw 54vh 1px rgba(180,200,255,.4), 31vw 42vh 1px rgba(180,200,255,.6), 38vw 48vh 2px rgba(180,200,255,.3),
+    45vw 56vh 1px rgba(180,200,255,.5), 52vw 44vh 1px rgba(180,200,255,.4), 59vw 52vh 2px rgba(180,200,255,.6), 66vw 58vh 1px rgba(180,200,255,.3),
+    73vw 46vh 1px rgba(180,200,255,.5), 80vw 54vh 2px rgba(180,200,255,.4), 88vw 60vh 1px rgba(180,200,255,.6), 94vw 48vh 1px rgba(180,200,255,.3),
+    6vw 66vh 2px rgba(180,200,255,.5), 14vw 72vh 1px rgba(180,200,255,.4), 21vw 68vh 1px rgba(180,200,255,.6), 28vw 76vh 2px rgba(180,200,255,.3),
+    35vw 64vh 1px rgba(180,200,255,.5), 41vw 70vh 1px rgba(180,200,255,.4), 48vw 78vh 2px rgba(180,200,255,.6), 55vw 66vh 1px rgba(180,200,255,.3),
+    62vw 74vh 1px rgba(180,200,255,.5), 69vw 82vh 2px rgba(180,200,255,.4), 76vw 70vh 1px rgba(180,200,255,.6), 83vw 78vh 1px rgba(180,200,255,.3),
+    90vw 84vh 2px rgba(180,200,255,.5), 5vw 90vh 1px rgba(180,200,255,.4), 12vw 96vh 1px rgba(180,200,255,.6), 19vw 92vh 2px rgba(180,200,255,.3);
+    animation:drift 80s linear infinite reverse;
+}
+@keyframes drift{0%{transform:translateY(0)}100%{transform:translateY(-80px)}}
+
+/* Stream lines */
+.starfield-line{pointer-events:none;position:fixed;inset:0;z-index:0;display:none;background:radial-gradient(ellipse at var(--mx,50%) var(--my,50%),rgba(180,200,255,.04) 0%,transparent 60%);}
+[data-theme='dark'] .starfield-line{display:block}
 .starfield-dot{position:absolute;border-radius:50%;background:rgba(200,220,255,.5)}
 @keyframes star-rotate{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
 

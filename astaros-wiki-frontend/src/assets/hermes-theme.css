@@ -289,3 +289,84 @@ a { color: inherit; text-decoration: none; }
   border: clamp(8px, 4vw, 55px) solid var(--color-background);
   mix-blend-mode: lighten;
 }
+
+/* ── Animated Gradient Arc (Hermes signature border glow) ── */
+.hw-arc {
+  position: absolute; inset: 0; z-index: 1; opacity: 0; pointer-events: none;
+  background: linear-gradient(160deg,
+    transparent 0%, var(--color-foreground) 15%, var(--color-muted) 20%,
+    var(--color-background) 25%, transparent 35% 40%,
+    var(--color-foreground) 55%, var(--color-muted) 60%,
+    var(--color-background) 65%, transparent 75% 80%,
+    var(--color-foreground) 95%, var(--color-muted) 100%);
+  background-size: 300% 300%;
+  padding: 1.25px;
+  transition: opacity 0.2s;
+  animation: hw-arc-stroke 2.23s linear infinite paused;
+  -webkit-mask-image: linear-gradient(#000 0 0), linear-gradient(#000 0 0);
+  mask-image: linear-gradient(#000 0 0), linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+.hw-card:hover .hw-arc,
+.hw-arc.running { opacity: 1; animation-play-state: running; }
+
+@keyframes hw-arc-stroke {
+  0%   { background-position: 15% 15%; }
+  100% { background-position: 100% 100%; }
+}
+
+/* ── Vignette (radial gradient darkening overlay) ── */
+.hw-vignette {
+  position: relative;
+}
+.hw-vignette::before {
+  content: '';
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: radial-gradient(120% 90% at 50% 42%, transparent 50%, var(--color-background) 100%);
+  opacity: 0.3;
+}
+
+/* ── Parallax Image ──────────────────────────────── */
+.hw-parallax {
+  --py: 0px;
+  transform: translate3d(0, var(--py), 0) scale(1.22);
+  will-change: transform;
+}
+
+/* ── Scroll Container (pointer-events passthrough) ── */
+.hw-scroll {
+  position: relative; z-index: 2;
+  padding: var(--hw-frame, 0) var(--hw-frame, 0) 0;
+  pointer-events: none;
+}
+.hw-scroll > :not([aria-hidden]) { pointer-events: auto; }
+
+/* ── Section Frame (border overlay like preview) ──── */
+.hw-frame {
+  position: absolute; inset: 0; pointer-events: none; z-index: 2;
+  border: clamp(8px, 4vw, 55px) solid var(--color-background);
+  mix-blend-mode: lighten;
+}
+
+/* ── Noise variant: color-burn (official site) ────── */
+.hw-noise-cb::after {
+  mix-blend-mode: color-burn;
+  opacity: 0.2;
+}
+
+/* ── Ring Button (terminal install style) ─────────── */
+.hw-ring-btn {
+  position: relative; isolation: isolate;
+  background: transparent; color: var(--color-foreground);
+  border: none; padding: 14px 24px;
+  font-family: var(--font-mono); font-size: 0.85rem;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.6);
+  transition: box-shadow 200ms ease-out;
+}
+.hw-ring-btn::before {
+  content: '▣'; position: absolute; left: 16px; top: 50%;
+  transform: translateY(-50%); font-size: 0.7rem;
+}
+.hw-ring-btn:hover { box-shadow: inset 0 0 0 1px var(--color-foreground); }
+

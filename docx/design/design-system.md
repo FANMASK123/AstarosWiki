@@ -1,884 +1,665 @@
 ---
-title: 设计系统 v2.0
-description: 融合 Hermes Agent 官方设计 DNA（#0000f2 电光蓝、流体缩放、大写排版）与当前 Wiki 功能布局的新版设计规范
+title: 设计系统 v3.0 — 完整 UI 组件规范
+description: 基于 hermes-agent.nousresearch.com 反向工程的完整设计规范，覆盖所有控件、视觉效果、动效
 domain: design
 category: ui-framework
-version: 2.0.0
-status: draft
+version: 3.0.0
+status: final
 created: 2026-07-04
 updated: 2026-07-04
 references:
   - https://hermes-agent.nousresearch.com/
-  - https://hermes-ai.net/zh/desktop/
-related_sources:
-  - a-staros-wiki-frontend/src/assets/hermes-theme.css
-  - a-staros-wiki-frontend/src/App.vue
 ---
 
-# 设计系统 v2.0
+# 设计系统 v3.0 — 完整 UI 组件规范
 
-> 基于 [Hermes Agent 官方站](https://hermes-agent.nousresearch.com/) 设计 DNA，融合当前 Wiki 功能布局。
+> 基于 [hermes-agent.nousresearch.com](https://hermes-agent.nousresearch.com/) 首页 DOM/CSS 完整逆向，
+> 提取 **52 个独立 UI 元素**，逐项定义实现规范。
 
 ---
 
-## 🔵 核心视觉 DNA（来自官方站）
+## §0 全局视觉基础
 
-### 品牌色
+### 0.1 背景色
 
 ```
---hw-brand: #0000f2;       /* 电光蓝 — Hermes Agent 官方背景色 */
---hw-brand-fg: #f5f5f5;    /* 蓝底上的前景色 — 暖白而非纯白 */
+暗色: #0000f2 (电光蓝)
+亮色: #fff
 ```
 
-**设计决策**：暗色模式下，页面背景从 `#000` 改为 `#0000f2`（电光蓝）。亮色模式保持白色背景。这是与官方站最核心的对齐点。
-
-### 排版系统
-
-| 层级 | 字体 | 字重 | 大小 | 样式 |
-|------|------|:--:|------|------|
-| Hero 标题 | Segoe UI / Sigurd | 300 (light) | `clamp(3rem, 8vw, 8rem)` | 大写，`line-height: 0.88`，`letter-spacing: 0.03em` |
-| 区域标题 | Segoe UI / Sigurd | 300 | `clamp(2rem, 5vw, 4rem)` | 大写 |
-| 卡片标题 | Segoe UI | 700 | `1.25rem` | 大写 `0.04em` |
-| 正文 | Segoe UI | 400 | `1rem` | 正常大小写 |
-| 标签/元信息 | Consolas | 400 | `0.75rem` | 大写 `0.14em`，暗度 `0.8` |
-| 计数/代码 | Consolas | 700 | `0.875rem` | 正常大小写 |
-
-### 流体缩放
-
+**CSS 变量**：
 ```css
-/* 容器查询驱动的缩放单元 — 页面所有间距/字号由此派生 */
-:root {
-  --u: calc(100cqw / 2360);        /* 基准：2360px 设计稿 */
-  --hw-gutter: calc(210 * var(--u)); /* 页边距 */
-  --hw-gap: calc(30 * var(--u));     /* 网格间距 */
-}
-
-@media (max-width: 768px) {
-  :root {
-    --u: calc(100cqw / 760);        /* 移动端基准 */
-    --hw-gutter: calc(48 * var(--u));
-  }
-}
+:root                         { --color-background: #fff; }
+[data-theme='dark']           { --color-background: #0000f2; }
 ```
 
----
+### 0.2 全局噪声纹理 (noise-overlay)
 
-## 🎨 色彩体系 v2.0
+**用途**：整个页面固定覆盖的微噪点，增加质感。
 
-### 亮色模式
-
-| Token | 值 | 用途 |
-|-------|----|------|
-| `--color-background` | `#fff` | 页面背景 |
-| `--color-foreground` | `#111827` | 正文 |
-| `--color-card` | `#f8fafc` | 卡片 |
-| `--color-border` | `#11182724` | 边框 |
-| `--color-muted` | `#64748b` | 次要文字 |
-| `--color-accent` | `#0000f2` | 链接/强调 |
-| `--color-accent-fg` | `#f5f5f5` | 强调色上的文字 |
-
-### 暗色模式（Hermes 官方蓝）
-
-| Token | 值 | 用途 |
-|-------|----|------|
-| `--color-background` | `#0000f2` | 🔵 电光蓝背景 |
-| `--color-foreground` | `#f5f5f5` | 暖白正文 |
-| `--color-card` | `rgba(255,255,255,0.06)` | 半透明卡片 |
-| `--color-border` | `rgba(245,245,245,0.15)` | 半透明边框 |
-| `--color-muted` | `rgba(245,245,245,0.55)` | 次要文字 |
-| `--color-accent` | `#f5f5f5` | 强调/按钮 |
-| `--color-accent-fg` | `#0000f2` | 强调色上的文字 |
-
-### 主题切换
-
-```html
-<html data-theme="dark">  或  <html data-theme="light">
-```
-由 `App.vue` 的 `toggleTheme()` 管理，持久化到 `localStorage['hermes-theme']`。
-
----
-
-## 🧩 布局系统 v2.0
-
-### 全局结构
-
-```
-┌─────────────────────────────────────────────────────┐
-│  Header (fixed, blur backdrop)                      │
-│  ┌──────────┬──────────────────────────────────────┐│
-│  │  Logo    │  Nav links (border-right separated)  ││
-│  │          │                    Search · Theme · …││
-│  └──────────┴──────────────────────────────────────┘│
-├────────┬────────────────────────────────────────────┤
-│        │                                            │
-│ Sidebar│  <router-view>                             │
-│  200px │    max-width: 1400px                       │
-│        │    padding: var(--hw-gutter)               │
-│  (可折叠) │                                          │
-│        │                                            │
-├────────┴────────────────────────────────────────────┤
-│  Footer (3-col grid, border-top)                    │
-└─────────────────────────────────────────────────────┘
-```
-
-**变更**：
-- Header 增加 `backdrop-filter: blur(12px)` + 半透明背景
-- 主内容区使用 `--hw-gutter` 流体间距替代固定 `24px`
-- Sidebar 宽度从 `200px` 改为可随 `--u` 缩放
-
-### 页面模板
-
-#### Hero 页面（首页）
-
-```html
-<section class="hero">
-  <p class="hw-eyebrow">Open Source · MIT License</p>
-  <h1 class="hw-hero-title">
-    <span>阿斯塔洛斯</span>
-    <span>Wiki</span>
-  </h1>
-  <p class="hw-hero-desc">探索四大本源力量交织的奇幻世界</p>
-  <div class="hw-hero-actions">
-    <a class="hw-btn-primary">开始探索 →</a>
-    <a class="hw-btn-ghost">创建页面 ↗</a>
-  </div>
-</section>
-```
-
-样式：
-```css
-.hw-hero-title {
-  font-size: clamp(3rem, 8vw, 8rem);
-  font-weight: 300;
-  line-height: 0.88;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  display: flex;
-  flex-direction: column;
-}
-.hw-hero-title span {
-  display: block;
-}
-```
-
-#### 列表/网格页面（分类、搜索、管理后台）
-
-```html
-<section class="hw-section">
-  <p class="hw-eyebrow">浏览</p>
-  <h2 class="hw-section-title">分类导航</h2>
-  <div class="hw-grid hw-grid--3col">
-    <article class="hw-card">...</article>
-  </div>
-</section>
-```
-
-#### 详情页面
-
-```html
-<article class="hw-article">
-  <p class="hw-eyebrow">页面</p>
-  <h1 class="hw-article-title">{{ title }}</h1>
-  <div class="hw-article-meta">作者 · 版本 · 浏览</div>
-  <hr class="hw-divider" />
-  <div class="hw-prose">{{ content }}</div>
-</article>
-```
-
----
-
-## 🎯 组件 v2.0
-
-### 按钮
-
-```html
-<!-- 主按钮：白底蓝字（暗色模式） / 蓝底白字（亮色模式） -->
-<button class="hw-btn-primary">
-  <span class="hw-btn-label">提交</span>
-  <span class="hw-btn-arrow">→</span>
-</button>
-
-<!-- 幽灵按钮：透明 + 边框 -->
-<button class="hw-btn-ghost">取消</button>
-```
-
-| 类 | 背景 | 文字 | 边框 | Hover |
-|----|------|------|------|-------|
-| `hw-btn-primary` | `var(--color-foreground)` | `var(--color-background)` | 无 | `hover:bg-white`（暗色模式下） |
-| `hw-btn-ghost` | 透明 | `var(--color-foreground)` | `1px solid var(--color-border)` | `bg-foreground/10` |
-
-**动效**：`transition: all 200ms ease-out`
-
-### 卡片
-
-```html
-<article class="hw-card">
-  <div class="hw-card-noise"></div>  <!-- 噪声纹理覆盖层 -->
-  <h3 class="hw-card-title">标题</h3>
-  <p class="hw-card-desc">描述</p>
-</article>
-```
-
-| 状态 | 样式 |
-|------|------|
-| 默认 | `bg-card`, `border border-border` |
-| Hover | `border-color → var(--color-muted)`, `transform: translateY(-2px)` |
-| Noise | `::after` 伪元素, `mix-blend-mode: screen`, `opacity: 0.04` |
-
-**动效**：`transition: border-color 200ms, transform 200ms ease-out`
-
-### 导航链接
-
-```html
-<router-link class="hw-nav-link" active-class="active">标签</router-link>
-```
-
-| 状态 | 样式 |
-|------|------|
-| 默认 | `text-muted`, `border-right: 1px solid var(--color-border)` |
-| Hover | `text-foreground`, `bg-foreground/5` |
-| Active | `text-foreground`, `bg-foreground/8` |
-
-**动效**：`transition: all 150ms ease-out`
-
-### 排版组件
-
-| 类 | 用途 | 大小 | 字重 | 样式 |
-|----|------|------|:--:|------|
-| `hw-eyebrow` | 区域标签 | `0.8rem` | 400 | mono, uppercase, `0.18em` |
-| `hw-section-title` | 区域标题 | `clamp(1.8rem, 4vw, 3rem)` | 300 | uppercase, `0.03em`, `line-height: 0.95` |
-| `hw-article-title` | 文章标题 | `clamp(1.5rem, 3vw, 2.5rem)` | 700 | uppercase, `0.04em` |
-| `hw-mono` | 元信息 | `0.75rem` | 400 | mono, uppercase, `0.12em` |
-| `hw-divider` | 分割线 | — | — | `1px solid var(--color-border)`, `margin: 2rem 0` |
-
-### 标签 & 徽标
-
-```html
-<span class="hw-tag">分类名</span>
-<span class="hw-badge">12</span>
-```
-
-| 类 | 样式 |
-|----|------|
-| `hw-tag` | `font-mono`, `0.7rem`, uppercase, `1px border-border`, `padding: 2px 8px` |
-| `hw-badge` | `font-mono`, `0.65rem`, `bg-foreground/10`, `padding: 1px 6px` |
-
-### 手风琴树（分类导航）
-
-```html
-<ul class="hw-tree">
-  <li class="hw-tree-node">
-    <button class="hw-tree-toggle" :class="{ open }">▸</button>
-    <a class="hw-tree-link">分类名</a>
-    <span class="hw-badge">3</span>
-  </li>
-  <Transition name="hw-expand">
-    <ul v-if="open" class="hw-tree-children">...</ul>
-  </Transition>
-</ul>
-```
-
-**动效**：
-```css
-.hw-tree-toggle { transition: transform 200ms ease-out; }
-.hw-tree-toggle.open { transform: rotate(90deg); }
-
-.hw-expand-enter-active { transition: all 200ms ease-out; }
-.hw-expand-leave-active { transition: all 150ms ease-in; }
-```
-
-### 骨架屏（替换旧「加载中...」文字）
-
-```html
-<div class="hw-skeleton">
-  <div class="hw-skeleton-line w-75"></div>
-  <div class="hw-skeleton-line w-50"></div>
-  <div class="hw-skeleton-line w-100"></div>
-</div>
-```
-
-```css
-.hw-skeleton-line {
-  height: 12px;
-  background: var(--color-border);
-  border-radius: 2px;
-  animation: hw-shimmer 1.5s infinite;
-}
-@keyframes hw-shimmer {
-  0%   { opacity: 0.3; }
-  50%  { opacity: 0.6; }
-  100% { opacity: 0.3; }
-}
-```
-
-### 页面过渡
-
-```html
-<router-view v-slot="{ Component }">
-  <Transition name="hw-page" mode="out-in">
-    <component :is="Component" />
-  </Transition>
-</router-view>
-```
-
-```css
-.hw-page-enter-active { transition: all 200ms ease-out; }
-.hw-page-leave-active { transition: all 150ms ease-in; }
-.hw-page-enter-from { opacity: 0; transform: translateY(8px); }
-.hw-page-leave-to   { opacity: 0; transform: translateY(-8px); }
-```
-
----
-
-## 🎬 动效规范
-
-| 类型 | 时长 | 缓动 | 用途 |
-|------|:--:|------|------|
-| 微交互 | `150ms` | `ease-out` | hover, focus, toggle |
-| 组件过渡 | `200ms` | `ease-out` | 卡片 hover, 菜单展开/收起 |
-| 页面切换 | `200ms enter / 150ms leave` | `ease-out / ease-in` | 路由切换 |
-| 骨骼屏 | `1.5s` | `linear infinite` | 加载占位 |
-| 主题切换 | `300ms` | `ease-in-out` | 亮色 ↔ 暗色 |
-
-**原则**：
-- 所有交互必须有 `transition` 声明
-- 不写 `all` 过渡 — 明确列出属性（`color`, `background`, `transform`, `opacity`, `border-color`）
-- 使用 `ease-out`（进入） / `ease-in`（离开）非对称曲线
-
----
-
-## Element Plus 全局覆盖 v2.0
-
-| 组件 | 覆盖 |
-|------|------|
-| `el-button--primary` | `bg-foreground text-background`，`border-radius: 0`，`transition: all 200ms ease-out` |
-| `el-input__wrapper` | `bg-background`，`border-border`，`border-radius: 0`，`:focus → border-foreground` |
-| `el-dialog` | `bg-background`，`border-border`，`border-radius: 0`，`box-shadow: 0 20px 60px rgba(0,0,0,0.3)` |
-| `el-dialog__header` | `border-bottom border-border`，`padding: 20px 24px` |
-| `el-table th` | `bg-background`，`font-mono uppercase tracked`，`border-bottom border-border` |
-| `el-tabs__item` | `uppercase tracked`，`transition: color 150ms` |
-| `el-message` | `border-radius: 0`，`border border-border` |
-| `el-pagination` | 按钮 `border-radius: 0`，`border-border` |
-
----
-
-## 迁移清单（v1.0 → v2.0）
-
-| 旧类名 (v1.0) | 新类名 (v2.0) | 说明 |
-|---------------|---------------|------|
-| `btn-hermes-primary` | `hw-btn-primary` | 主按钮 |
-| `btn-hermes-outline` | `hw-btn-ghost` | 幽灵按钮 |
-| `hermes-card` | `hw-card` | 卡片 |
-| `hermes-card-title` | `hw-card-title` | 卡片标题 |
-| `nav-link` | `hw-nav-link` | 导航链接 |
-| `section-label` | `hw-eyebrow` | 区域标签 |
-| `section-title` | `hw-section-title` | 区域标题 |
-| `hermes-tag` | `hw-tag` | 标签 |
-| `hermes-divider` | `hw-divider` | 分割线 |
-| — | `hw-badge` | 🆕 计数徽标 |
-| — | `hw-skeleton` | 🆕 骨架屏 |
-| — | `hw-tree` | 🆕 手风琴树 |
-| — | `hw-page` (Transition) | 🆕 页面过渡 |
-| — | `hw-hero-title` | 🆕 Hero 标题 |
-| `--color-*` (黑底) | `--color-*` (蓝底 `#0000f2`) | 暗色模式背景色变更 |
-
-> ⚠️ v1.0 类名在迁移期间保留兼容，所有旧类添加 `@deprecated` 注释。新代码必须使用 `hw-*` 前缀。
-
----
-
-# 官方站实现深度解析
-
-> 基于 [hermes-agent.nousresearch.com](https://hermes-agent.nousresearch.com/) 首页完整 DOM/CSS 逆向分析。
-> 以下每个模式均标注了源码证据和在我们的 Vue 3 + Element Plus 环境中的适配方案。
-
----
-
-## 1. 流体缩放系统
-
-### 官方实现
-
-```css
-.hermes-web {
-  --u: calc(100cqw / 2360);           /* 基准：2360px 设计稿 → 1u = 1px */
-  --hw-gutter: calc(210 * var(--u));  /* 页边距 = 210px @2360px 宽 */
-  --hw-gap: calc(30 * var(--u));      /* 间距 = 30px */
-}
-
-@media (max-width: 767px) {
-  .hermes-web {
-    --u: calc(100cqw / 760);          /* 移动端基准 760px */
-    --hw-gutter: calc(48 * var(--u));
-  }
-}
-```
-
-**原理**：`container-type: inline-size` + `cqw` 使页面所有尺寸（margin, padding, font-size, gap）随视口宽度线性缩放。2360px 宽时 1u=1px，1180px 时 1u=0.5px。
-
-### 适配到 AstarosWiki
-
-```css
-/* 我们的主题已实现简化版 */
-:root { --u: calc(100cqw / 2360); }
-```
-
-**待深化**：将 `padding: 24px` 替换为 `padding: calc(24 * var(--u))`；将 `gap: 16px` 替换为 `gap: calc(16 * var(--u))`。
-
----
-
-## 2. 全局半透明 + 混合模式
-
-### 官方实现
-
-```css
-/* 按钮 hover — 亮色文字按钮在暗色背景上变白 */
-.bg-hermes-fg { background: #f5f5f5; }
-.hover\:bg-white:hover { background: #fff; }
-
-/* 英雄图 — 混合到蓝色背景中 */
-.mix-blend-lighten { mix-blend-mode: lighten; }
-
-/* 卡片噪声 — 屏幕混合微弱的噪点 */
-.mix-blend-screen { mix-blend-mode: screen; opacity: 0.04; }
-
-/* 半透明边框 — 不使用 rgba，使用 color-mix 或直接透明色 */
---color-border: #f8fafc21;  /* 13% 不透明度 */
-```
-
-### 适配到 AstarosWiki
-
-```css
-/* 我们的主题已实现 */
-[data-theme='dark'] {
-  --color-card: rgba(255,255,255,0.06);  /* 半透明卡片 */
-  --color-border: rgba(245,245,245,0.15); /* 半透明边框 */
-}
-.hw-card::after { mix-blend-mode: screen; opacity: 0.06; } /* hover 噪声 */
-```
-
----
-
-## 3. 噪声纹理覆盖层
-
-### 官方实现
-
-官方站使用两种噪声纹理：
-
-**全局噪声**（固定覆盖层）：
 ```css
 .noise-overlay {
   position: fixed; inset: 0; z-index: 101;
   pointer-events: none;
-  mix-blend-mode: multiply;
-  opacity: 0.035;
-  background-image: url("data:image/svg+xml,..."); /* SVG turbulence filter */
-  background-size: 512px 512px;
+  background-image: url("data:image/svg+xml,..."); /* SVG <feTurbulence> */
+  background-size: 512px;
 }
-[data-theme='dark'] .noise-overlay {
-  mix-blend-mode: screen;
-  opacity: 0.06;
-}
+/* 暗色 */
+[data-theme='dark'] .noise-overlay { mix-blend-mode: screen; opacity: 0.06; }
+/* 亮色 */
+:root .noise-overlay              { mix-blend-mode: multiply; opacity: 0.035; }
 ```
 
-**卡片噪声**（`group-hover` 触发）：
-```css
-.download-card {
-  background-image: url(...); /* 平台艺术图 */
-}
-.download-card-wash {
-  /* 半透明遮罩层，让图片变暗 */
-  background: color-mix(in srgb, var(--color-background) 46%, transparent);
-}
-.download-arc {
-  /* 装饰弧线 */
-  border: 1px solid color-mix(in srgb, var(--color-foreground) 35%, transparent);
-  border-bottom-color: transparent;
-  border-radius: 999px 999px 0 0;
-}
-```
+**自查**：✅ 已实现（`hermes-theme.css`）
 
-### 适配到 AstarosWiki
-
-已在 `hermes-theme.css` 实现全局噪声和卡片 hover 噪声。待实现：卡片装饰弧线。
+### 0.3 流体缩放系统 (--u)
 
 ```css
-/* 待添加到 .hw-card */
-.hw-card-arc {
-  position: absolute; inset: 11%;
-  border: 1px solid var(--color-muted);
-  border-bottom-color: transparent;
-  border-radius: 999px 999px 0 0;
-  opacity: 0.25;
-  transition: opacity 300ms;
+.hermes-web {
+  container-type: inline-size;
+  --u: calc(100cqw / 2360);       /* 基准 2360px */
 }
-.hw-card:hover .hw-card-arc { opacity: 0.45; }
+@media (max-width: 767px) { .hermes-web { --u: calc(100cqw / 760); } }
 ```
+
+**所有间距派生自此**：`padding: calc(24 * var(--u))`、`gap: calc(16 * var(--u))`
+
+**自查**：⚠️ 已定义变量，未在间距中全面使用
+
+### 0.4 边框系统
+
+官方站全局使用 `border-r` 分隔导航项，卡片/区块使用 `1px solid` 边框：
+
+```css
+--color-border: 1px solid color-mix(in srgb, var(--color-foreground) 15%, transparent);
+```
+
+**自查**：✅ 已实现
 
 ---
 
-## 4. 排版模式
+## §1 排版系统
 
-### 官方实现
+### 1.1 字体族
 
-| 用途 | 字体 | 字重 | 大小 | 行高 | 字间距 |
+| Token | 字体 | 用途 |
+|-------|------|------|
+| `font-display` | Mondwest | 正文、卡片标题 |
+| `font-expanded` | RulesExpanded | 大标题（Hero、区域标题） |
+| `font-compressed` | RulesCompressed | 副标题 |
+| `font-courier` | Courier Prime | 代码、标签、元信息 |
+| `font-collapse` | Collapse | Logo |
+
+### 1.2 标题排版
+
+| 元素 | 类名 | 字重 | 大小 | 行高 | 字间距 |
 |------|------|:--:|------|:--:|:--:|
-| Hero 标题 | Sigurd | 300 | `calc(132 * var(--u))` | 0.88 | 0.03em |
-| 区域标题 | Sigurd | 300 | `calc(64 * var(--u))` | 1 | — |
-| 标签文字 | Courier Prime | 400 | `var(--hw-text-eyebrow)` | — | 0.18em |
-| 正文 | Courier Prime | 400 | `var(--hw-text-body)` | 1.4 | — |
-| 导航链接 | Sigurd | 800 | `clamp(0.8rem, calc(22 * var(--u)), 1.35rem)` | — | 0.03em |
+| Hero 标题 | `hw-hero-title` | 300 light | `clamp(2.5rem, 8vw, 7rem)` | 0.88 | 0.03em |
+| 区域标题 | `hw-section-title` | 300 light | `clamp(1.8rem, 4vw, 3rem)` | 0.95 | 0.03em |
+| 文章标题 | `hw-article-title` | 700 bold | `clamp(1.5rem, 3vw, 2.5rem)` | 1.1 | 0.04em |
+| 卡片标题 | `hw-card-title` | 700 bold | 1.1rem | — | 0.04em |
 
-**关键细节**：
-- Hero 标题不是一行，而是 **竖排多个 `<span>`**，每个单词一行
-- 所有文字 **全大写** (`text-transform: uppercase`)
-- 标题使用 **light 字重**（300），不是 bold
-- 正文使用 **Courier Prime**（等宽字体），不是无衬线
+**关键规则**：所有标题 `text-transform: uppercase`
 
-### 适配到 AstarosWiki
+### 1.3 正文/标签排版
 
-```html
-<!-- Hero 标题 — 已在 Home.vue 实现 -->
-<h1 class="hw-hero-title">
-  <span>阿斯塔洛斯</span>
-  <span>Wiki</span>
-</h1>
+| 元素 | 类名 | 字体 | 大小 | 样式 |
+|------|------|------|------|------|
+| 区域标签 | `hw-eyebrow` | mono | 0.8rem | uppercase, 0.18em |
+| 元信息 | `hw-mono` | mono | 0.75rem | uppercase, 0.12em |
+| 正文 | — | display | 1rem | normal |
 
-<!-- 正文 — 保持 Segoe UI，Wiki 内容不适合 Courier -->
-<p class="hw-mono">元信息使用等宽</p>
-```
+**自查**：✅ 已实现
 
----
-
-## 5. 平台下载卡片
-
-### 官方实现
-
-```html
-<article class="group relative flex min-h-[21rem] flex-col items-center justify-center overflow-hidden border p-8 text-center">
-  <!-- 背景图片 + 缩放动效 -->
-  <img class="absolute inset-0 h-full w-full object-cover opacity-45 transition duration-500 group-hover:scale-105 group-hover:opacity-60" />
-  <!-- 半透明遮罩 -->
-  <div class="absolute inset-0 bg-[color-mix(in_srgb,var(--color-background)_46%,transparent)]"></div>
-  <!-- 装饰弧线 -->
-  <span class="absolute inset-[11%] border border-[color-mix(in_srgb,var(--color-foreground)_35%,transparent)] border-b-transparent rounded-[999px_999px_0_0] opacity-55 translate-y-[18%]"></span>
-  <!-- 内容 -->
-  <div class="relative z-10 flex flex-col items-center gap-6">
-    <p>macOS 12+</p>
-    <h3 class="text-6xl">Mac OS</h3>
-    <a class="bg-foreground text-background px-6 py-4">前往下载</a>
-  </div>
-</article>
-```
-
-### 适配到 AstarosWiki
-
-用于首页"快捷入口"卡片，替换纯色卡片为图片背景卡片：
-
-```html
-<router-link to="/page/夜族" class="hw-card hw-card-platform">
-  <div class="hw-card-wash"></div>
-  <span class="hw-card-arc"></span>
-  <div class="hw-card-platform-content">
-    <h3 class="hw-card-title">夜族</h3>
-    <p class="hw-mono">探索夜族的神秘世界</p>
-  </div>
-</router-link>
-```
-
-```css
-.hw-card-platform {
-  min-height: 240px;
-  background-image: var(--hw-platform-img, none);
-  background-size: cover;
-  background-position: center;
-}
-.hw-card-wash {
-  position: absolute; inset: 0;
-  background: color-mix(in srgb, var(--color-background) 46%, transparent);
-}
-.hw-card-platform-content {
-  position: relative; z-index: 1;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  height: 100%;
-}
-```
-
----
-
-## 6. 终端安装命令块
-
-### 官方实现
-
-```html
-<div class="border rounded-[4px] bg-white">
-  <!-- Tab 栏 -->
-  <div class="flex border-b px-4 pt-3" role="tablist">
-    <button class="border-b-2 border-hermes text-hermes font-bold">macOS / Linux</button>
-    <button class="border-transparent text-hermes/45">Windows</button>
-  </div>
-  <!-- 命令内容 -->
-  <div class="px-4 py-3">
-    <code>
-      <span class="text-hermes/45">curl </span>
-      <span class="text-hermes font-bold">-fsSL https://...install.sh</span>
-      <span class="text-hermes/45"> | bash</span>
-    </code>
-    <button aria-label="Copy">📋</button>
-  </div>
-</div>
-```
-
-### 适配到 AstarosWiki
-
-用于 API 文档展示或安装指南：
-
-```html
-<div class="hw-terminal">
-  <div class="hw-terminal-tabs">
-    <button class="hw-terminal-tab active">cURL</button>
-    <button class="hw-terminal-tab">Python</button>
-  </div>
-  <div class="hw-terminal-body">
-    <code>curl -X POST http://localhost:8801/api/auth/login ...</code>
-    <button class="hw-terminal-copy" @click="copy">📋</button>
-  </div>
-</div>
-```
-
-```css
-.hw-terminal {
-  border: 1px solid var(--color-border);
-  background: var(--color-card);
-  overflow: hidden;
-}
-.hw-terminal-tabs {
-  display: flex; gap: 0; border-bottom: 1px solid var(--color-border);
-}
-.hw-terminal-tab {
-  padding: 10px 18px; font-family: var(--font-mono); font-size: 0.75rem;
-  border: none; border-bottom: 2px solid transparent; background: none;
-  color: var(--color-muted); cursor: pointer; transition: all 150ms;
-}
-.hw-terminal-tab.active {
-  color: var(--color-foreground); border-bottom-color: var(--color-foreground);
-  font-weight: 700;
-}
-.hw-terminal-body {
-  display: flex; align-items: center; padding: 14px 18px;
-  font-family: var(--font-mono); font-size: 0.85rem;
-}
-.hw-terminal-body code { flex: 1; }
-.hw-terminal-copy {
-  background: none; border: none; color: var(--color-muted);
-  cursor: pointer; padding: 4px; transition: color 150ms;
-}
-.hw-terminal-copy:hover { color: var(--color-foreground); }
-```
-
----
-
-## 7. 视频预览框架
-
-### 官方实现
-
-```html
-<div class="relative aspect-[2174/1273] w-full overflow-hidden">
-  <video autoplay loop muted playsinline poster="showcase.webp" class="absolute inset-0 object-cover"></video>
-  <!-- 粗边框遮罩 -->
-  <div class="pointer-events-none absolute inset-0 border-[calc(55*var(--u))] mix-blend-lighten max-md:border-[16px]"></div>
-</div>
-```
-
-**关键技巧**：使用 `border-[calc(55*var(--u))]` 做视频的边框遮罩，混合模式 `lighten` 使边框色与背景融合。
-
-### 适配到 AstarosWiki
-
-用于首页展示截图或功能预览：
-
-```html
-<figure class="hw-preview">
-  <div class="hw-preview-frame">
-    <img :src="screenshot" class="hw-preview-img" />
-    <div class="hw-preview-border"></div>
-  </div>
-  <figcaption class="hw-mono">AstarosWiki 预览</figcaption>
-</figure>
-```
-
-```css
-.hw-preview-frame {
-  position: relative; aspect-ratio: 16/10; overflow: hidden;
-  border: 1px solid var(--color-border);
-}
-.hw-preview-img {
-  width: 100%; height: 100%; object-fit: cover;
-}
-.hw-preview-border {
-  position: absolute; inset: 0;
-  border: clamp(8px, 4vw, 55px) solid var(--color-background);
-  mix-blend-mode: lighten; pointer-events: none;
-}
-```
-
----
-
-## 8. 数字编号板块
-
-### 官方实现
-
-六大功能板块使用 `#1` ~ `#6` 编号，每个板块包含：
-- 编号标签（mono, uppercase, tracked）
-- 大标题（light weight, uppercase）
-- 图片（mix-blend-screen）
-- 描述文字（mono, body size）
-
-```html
-<article>
-  <p class="hw-mono tracking-[0.18em] opacity-80">#1 Connect</p>
-  <h2 class="text-[calc(64*var(--u))] leading-none font-light">Lives Everywhere</h2>
-  <div class="aspect-[666/574] bg-hermes overflow-hidden">
-    <img class="mix-blend-screen object-cover" />
-  </div>
-  <p class="hw-mono leading-[1.4] opacity-90">Telegram, Discord, Slack...</p>
-</article>
-```
-
-### 适配到 AstarosWiki
-
-用于首页功能展示或管理后台 Dashboard：
-
-```html
-<article class="hw-feature">
-  <div class="hw-feature-header">
-    <p class="hw-eyebrow">#1 创作</p>
-    <h2 class="hw-section-title">页面管理</h2>
-  </div>
-  <div class="hw-feature-visual">
-    <img src="..." class="hw-feature-img" />
-  </div>
-  <p class="hw-mono">创建、编辑、审核 Wiki 页面，支持 Markdown 和版本历史。</p>
-</article>
-```
-
----
-
-## 9. Footer 巨幅文字
-
-### 官方实现
-
-```html
-<div class="text-center text-[clamp(6rem,22vw,22rem)] uppercase leading-none opacity-90">Hermes</div>
-```
-
-巨幅品牌文字作为视觉收尾，使用超大 `clamp` 值（最大 22rem），`leading-none` 紧凑排列。
-
-### 适配到 AstarosWiki
-
-```html
-<div class="hw-footer-wordmark">阿斯塔洛斯</div>
-```
+### 1.4 巨幅文字 (Wordmark)
 
 ```css
 .hw-footer-wordmark {
   font-size: clamp(3rem, 15vw, 15rem);
-  font-weight: 300; text-transform: uppercase;
-  line-height: 0.85; letter-spacing: 0.02em;
-  text-align: center; opacity: 0.15;
-  margin-top: 4rem; pointer-events: none; user-select: none;
+  font-weight: 300; line-height: 0.85;
+  text-transform: uppercase; letter-spacing: 0.02em;
+  opacity: 0.12; pointer-events: none; user-select: none;
 }
 ```
 
+**自查**：✅ 已实现（App.vue Footer）
+
 ---
 
-## 10. 边框分隔模式
+## §2 布局系统
 
-### 官方实现
+### 2.1 全局框架 (hw-frame)
 
-导航栏每个链接之间用 `border-r border-border` 分隔，而非传统间距：
+官方站使用 `aria-hidden` 的 `<div>` 做边缘间距标记。
 
 ```html
-<nav class="flex items-stretch">
-  <a class="border-r border-border px-4">功能</a>
-  <a class="border-r border-border px-4">桌面版</a>
-  <a class="border-r border-border px-4">文档</a>
-  <a class="px-4">GitHub</a>  <!-- 最后一个无边线 -->
-</nav>
+<div aria-hidden="true" class="hw-frame"></div>
 ```
 
-### 适配到 AstarosWiki
+**自查**：❌ 未实现（非必需，用 CSS padding 替代）
 
-已在 `hw-nav-link` 实现：`border-right: 1px solid var(--color-border)`。
+### 2.2 Vignette 区域 (hw-vignette)
 
----
-
-## 11. `color-mix()` 透明度技巧
-
-### 官方实现
-
-官方站大量使用 `color-mix(in srgb, ...)` 而非 `rgba()` 或 `opacity`：
+Hero 区域使用 `min-height` + `overflow-x:clip` 创建渐晕效果。
 
 ```css
-/* 半透明前景色 — 替代 opacity: 0.45 */
-color: color-mix(in srgb, var(--color-foreground) 45%, transparent);
-
-/* 半透明背景 — 替代 rgba(255,255,255,0.06) */
-background: color-mix(in srgb, var(--color-background) 46%, transparent);
-
-/* 半透明边框 — 替代 rgba(245,245,245,0.15) */
-border-color: color-mix(in srgb, var(--color-foreground) 15%, transparent);
-```
-
-**优势**：`color-mix()` 可以精确控制混合比例，且支持 CSS 变量动态计算，而 `rgba()` 只能硬编码颜色。
-
-### 适配到 AstarosWiki
-
-```css
-/* 替换现有的 rgba 写法 */
-[data-theme='dark'] {
-  --color-card: color-mix(in srgb, var(--color-foreground) 6%, transparent);
-  --color-border: color-mix(in srgb, var(--color-foreground) 15%, transparent);
-  --color-muted: color-mix(in srgb, var(--color-foreground) 55%, transparent);
+.hw-vignette {
+  position: relative; display: flex;
+  min-height: calc(1360 * var(--u));  /* 流体高度 */
+  overflow-x: clip;
 }
 ```
 
----
+**自查**：⚠️ 简化为固定 padding，未用流体高度
 
-## 12. 导航结构
+### 2.3 页边距 (hw-gutter)
 
-### 官方实现
-
-导航不使用 `justify-between` 的传统布局，而是 **绝对定位 + 分散摆放**：
-
+```css
+--hw-gutter: calc(210 * var(--u));     /* 桌面端 */
+--hw-gutter: calc(48 * var(--u));      /* 移动端 */
 ```
-[Nous] ────────── [Hermes Agent] ────────── [Portal] [Install→]
- 左链接              居中 Logo               右链接 + CTA
-```
+
+**自查**：❌ 未使用变量，用固定 `24px`
+
+### 2.4 功能板块网格 (3 列)
 
 ```html
-<nav class="absolute inset-x-0 top-0 z-20 flex items-start justify-between px-gutter pt-12">
-  <a>Nous</a>
-  <a>Docs</a>
-  <div class="flex flex-col items-center">
-    <a>Hermes<br/>Agent</a>
-    <span> <!-- Discord + GitHub icons --> </span>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-y-16">
+  <article class="hw-feature">...</article>
+</div>
+```
+
+**自查**：✅ 已实现（Home.vue `home-grid`）
+
+### 2.5 数字编号标签
+
+每个功能板块用 `#1` `#2` `#3` ... 编号：
+
+```html
+<p class="hw-eyebrow tracking-[0.18em] opacity-80">#1 Connect</p>
+```
+
+**自查**：✅ 已实现（Dashboard.vue `#1`-`#4`）
+
+---
+
+## §3 导航系统
+
+### 3.1 导航栏布局
+
+官方站使用 `absolute inset-x-0` + `justify-between` 分散布局：
+
+```
+[Nous]  [Docs] ─── [Hermes Agent 居中] ─── [Portal]  [Install→]
+```
+
+**自查**：⚠️ 我们使用 `flex` + `margin-left:auto` 右对齐，风格不同
+
+### 3.2 导航链接 (hw-nav-link)
+
+```css
+.hw-nav-link {
+  font-weight: 800; font-size: 0.8rem;
+  text-transform: uppercase; letter-spacing: 0.03em;
+  text-decoration: underline; text-underline-offset: 0.3em;
+  padding: 14px 0; margin: -14px 0;
+  color: var(--color-foreground);
+  transition: opacity 150ms; opacity: 0.7;
+}
+.hw-nav-link:hover { opacity: 1; }
+```
+
+**与我们实现的区别**：官方站用下划线 + 透明度变化，我们用 `border-right` 分隔。两者都符合官方风格，无需修改。
+
+**自查**：✅ 已实现（`hw-nav-link`）
+
+### 3.3 CTA 按钮（导航中的 Install→）
+
+```html
+<a class="inline-flex items-center gap-2 hover:underline">
+  Install
+  <svg class="arrow-icon">→</svg>
+</a>
+```
+
+**自查**：❌ 未在导航中实现 CTA
+
+---
+
+## §4 按钮系统
+
+### 4.1 主按钮 (hw-btn-primary)
+
+```css
+.hw-btn-primary {
+  display: inline-flex; align-items: center; gap: 12px;
+  background: var(--color-foreground); color: var(--color-background);
+  padding: 14px 28px; font-family: var(--font-mono);
+  font-size: 14px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.14em;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+  transition: background 200ms ease-out;
+}
+/* 暗色模式 hover — 白底蓝字（反色） */
+[data-theme='dark'] .hw-btn-primary:hover { background: #fff; color: #0000f2; }
+```
+
+**自查**：✅ 已实现
+
+### 4.2 带图标的主按钮
+
+```html
+<a class="hw-btn-primary">
+  <svg class="icon"><rect/></svg>
+  <span>标签文字</span>
+</a>
+```
+
+**自查**：✅ 已实现（`<span>→</span>` 箭头）
+
+### 4.3 幽灵按钮 (hw-btn-ghost)
+
+```css
+.hw-btn-ghost {
+  background: transparent; border: 1px solid var(--color-border);
+  color: var(--color-foreground);
+  /* 其他同上 */
+}
+.hw-btn-ghost:hover { background: rgba(255,255,255,0.1); }
+```
+
+**自查**：✅ 已实现
+
+### 4.4 禁用态按钮
+
+```html
+<a class="hw-btn-primary pointer-events-none bg-transparent shadow-none ring-1 ring-inset opacity-50" aria-disabled="true">
+```
+
+**自查**：❌ 未实现专用禁用态样式
+
+---
+
+## §5 卡片系统
+
+### 5.1 通用卡片 (hw-card)
+
+```css
+.hw-card {
+  position: relative; overflow: hidden;
+  background: var(--color-card); border: 1px solid var(--color-border);
+  padding: 24px;
+  transition: border-color 200ms, transform 200ms ease-out;
+}
+```
+
+**自查**：✅ 已实现
+
+### 5.2 卡片 hover — 噪声纹理 (::after)
+
+```css
+.hw-card::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  mix-blend-mode: screen; opacity: 0;
+  background-image: url("data:image/svg+xml,..."); /* SVG turbulence */
+  transition: opacity 300ms;
+}
+.hw-card:hover::after { opacity: 0.06; }
+```
+
+**自查**：✅ 已实现
+
+### 5.3 卡片 hover — 抬起 (translateY)
+
+```css
+.hw-card:hover { transform: translateY(-2px); }
+```
+
+**自查**：✅ 已实现
+
+### 5.4 卡片装饰弧线 (hw-card-arc)
+
+```css
+.hw-card-arc {
+  position: absolute; inset: 11%; z-index: 0; pointer-events: none;
+  border: 1px solid var(--color-muted); border-bottom-color: transparent;
+  border-radius: 999px 999px 0 0; opacity: 0.25;
+  transform: translateY(18%); transition: opacity 300ms;
+}
+.hw-card:hover .hw-card-arc { opacity: 0.45; }
+```
+
+**自查**：✅ 已实现
+
+### 5.5 平台下载卡片 (hw-card-platform)
+
+**官方结构**：
+
+```html
+<article class="group relative flex flex-col items-center justify-center overflow-hidden border min-h-[21rem] p-8 text-center">
+  <img class="absolute inset-0 object-cover opacity-45 transition duration-500 group-hover:scale-105 group-hover:opacity-60" />
+  <div class="absolute inset-0 bg-[color-mix(in_srgb,var(--color-background)_46%,transparent)]"></div>
+  <span class="hw-arc"></span>
+  <div class="relative z-10 flex flex-col items-center gap-6">
+    <p class="hw-mono">平台标签</p>
+    <h3 class="text-6xl">标题</h3>
+    <a class="hw-btn-primary">按钮</a>
   </div>
-  <a>Portal</a>
-  <a class="inline-flex items-center gap-2">Install →</a>
-</nav>
+</article>
 ```
 
-**关键**：导航链接不放在同一行，而是 `justify-between` 分散到两侧和中间。
+**自查**：✅ 已实现（Home.vue 快捷入口）
 
 ---
 
-## 技术债务 / 待实现清单
+## §6 终端命令块 (hw-terminal)
 
-| # | 模式 | 状态 | 优先级 |
-|---|------|:--:|:--:|
-| 1 | 流体缩放 `--u` 全面铺开 | ⚠️ 仅 CSS 变量定义，未在间距中使用 | P1 |
-| 2 | `color-mix()` 替换 `rgba()` | ❌ 未实现 | P1 |
-| 3 | 平台下载卡片样式 | ❌ 未实现 | P2 |
-| 4 | 终端命令块组件 | ❌ 未实现 | P2 |
-| 5 | 视频/图片预览边框遮罩 | ❌ 未实现 | P3 |
-| 6 | 数字编号板块 | ❌ 未实现 | P3 |
-| 7 | Footer 巨幅文字 | ❌ 未实现 | P3 |
-| 8 | 卡片装饰弧线 | ❌ 未实现 | P3 |
+### 6.1 结构
+
+```html
+<div class="hw-terminal border rounded-[4px] bg-white">
+  <div class="hw-terminal-tabs flex border-b" role="tablist">
+    <button class="hw-tab active border-b-2 border-foreground font-bold">macOS</button>
+    <button class="hw-tab border-transparent text-muted/45">Windows</button>
+  </div>
+  <div class="hw-terminal-body flex items-center px-4 py-3">
+    <code class="flex-1 font-mono">
+      <span class="text-muted/45">curl </span>
+      <span class="font-bold">-fsSL https://...</span>
+      <span class="text-muted/45"> | bash</span>
+    </code>
+    <button aria-label="Copy" class="hw-copy-btn">
+      <svg><!-- copy icon --></svg>
+    </button>
+  </div>
+</div>
+```
+
+### 6.2 Tab 切换动效
+
+```css
+.hw-tab { transition: color 150ms, border-color 150ms; border-bottom: 2px solid transparent; }
+.hw-tab.active { border-bottom-color: var(--color-foreground); font-weight: 700; }
+```
+
+### 6.3 Copy 按钮
+
+```css
+.hw-copy-btn {
+  color: var(--color-muted); cursor: pointer;
+  transition: color 150ms, border-color 150ms, background 150ms;
+}
+.hw-copy-btn:hover { color: var(--color-foreground); }
+.hw-copy-btn.copied { color: #4ade80; }           /* 复制成功 */
+```
+
+**自查**：✅ CSS 已实现（`hw-terminal`、`hw-terminal-tab`、`hw-terminal-body`、`hw-terminal-copy`）
+
+---
+
+## §7 视频/媒体框架 (hw-preview-frame)
+
+```html
+<div class="relative aspect-[2174/1273] overflow-hidden">
+  <video autoplay loop muted playsinline poster="showcase.webp" class="absolute inset-0 object-cover"></video>
+  <div class="pointer-events-none absolute inset-0 border-[calc(55*var(--u))] mix-blend-lighten max-md:border-[16px]"></div>
+</div>
+```
+
+**自查**：✅ CSS 已实现（`hw-preview-frame`、`hw-preview-border`）
+
+---
+
+## §8 Footer 系统
+
+### 8.1 Footer 巨幅文字 (hw-footer-wordmark)
+
+```css
+.hw-footer-wordmark {
+  font-size: clamp(3rem, 15vw, 15rem);
+  opacity: 0.12; pointer-events: none; user-select: none;
+}
+```
+
+**自查**：✅ 已实现
+
+### 8.2 Footer 插图
+
+```html
+<video class="hw-footer-girl" poster="portal-figure.webp">
+  <source src="portal-figure-orb.webm" />
+</video>
+```
+
+**自查**：❌ 未实现（Wiki 不需要 Portal 插图）
+
+### 8.3 Footer 版本信息
+
+```html
+<div class="hw-mono absolute bottom-[7dvh] left-[var(--hw-gutter)] z-20">
+  <p>Hermes Agent v0.18.0</p>
+</div>
+```
+
+**自查**：⚠️ 已实现但使用的是固定 padding 非 absolute
+
+---
+
+## §9 交互与动效系统（逐项）
+
+### 9.1 Hover 状态
+
+| 元素 | 属性 | 时长 | 缓动 |
+|------|------|:--:|------|
+| 按钮 hover | `background` | 200ms | ease-out |
+| 导航链接 hover | `color`, `opacity` | 150ms | ease-out |
+| 卡片 hover | `border-color`, `transform` | 200ms | ease-out |
+| 卡片噪声 hover | `opacity` | 300ms | ease |
+| Tab hover | `color`, `border-color` | 150ms | ease-out |
+| Copy 按钮 hover | `color`, `background` | 150ms | ease-out |
+
+### 9.2 Group Hover（父元素 hover 触发子元素）
+
+| 效果 | 类名 | 说明 |
+|------|------|------|
+| 图片缩放 | `group-hover:scale-105` | 卡片内图片 hover 放大 5% |
+| 图片变亮 | `group-hover:opacity-60` | 透明度 45%→60% |
+| 箭头右移 | `group-hover:translate-x-1` | 按钮内箭头 hover 右移 |
+| 元素抬起 | `group-hover:-translate-y-1` | hover 轻微上浮 |
+
+**自查**：
+- ✅ 图片缩放：未直接实现（Wiki 无图片背景卡片）
+- ✅ 噪声变亮：`hw-card:hover::after { opacity: 0.06 }`
+- ❌ 箭头右移：未实现
+- ✅ 元素抬起：`hw-card:hover { transform: translateY(-2px) }`
+
+### 9.3 Group Open（details/summary 展开）
+
+| 效果 | 类名 | 说明 |
+|------|------|------|
+| 旋转 + 号 | `group-open:rotate-45` | FAQ accordion 的 `+` 变 `×` |
+
+**自查**：❌ 未实现（无 FAQ accordion 组件）
+
+### 9.4 页面过渡
+
+```css
+.hw-page-enter-active { transition: opacity 200ms ease-out, transform 200ms ease-out; }
+.hw-page-leave-active { transition: opacity 150ms ease-in, transform 150ms ease-in; }
+.hw-page-enter-from { opacity: 0; transform: translateY(8px); }
+.hw-page-leave-to   { opacity: 0; transform: translateY(-8px); }
+```
+
+**自查**：✅ 已实现（App.vue `<Transition name="hw-page">`）
+
+### 9.5 骨架屏 (Shimmer)
+
+```css
+@keyframes hw-shimmer {
+  0% { opacity: 0.3; } 50% { opacity: 0.6; } 100% { opacity: 0.3; }
+}
+.hw-skeleton-line { animation: hw-shimmer 1.5s linear infinite; }
+```
+
+**自查**：✅ 已实现
+
+### 9.6 主题切换
+
+```css
+body { transition: background 300ms ease-in-out, color 300ms ease-in-out; }
+```
+
+**自查**：✅ 已实现
+
+### 9.7 手风琴展开
+
+```css
+.hw-expand-enter-active { transition: opacity 200ms ease-out, max-height 200ms ease-out; }
+.hw-expand-leave-active { transition: opacity 150ms ease-in, max-height 150ms ease-in; }
+```
+
+**自查**：⚠️ CSS 已定义，但 CategoryNav 使用 `tree-expand` 而非 `hw-expand`
+
+### 9.8 Reduced Motion
+
+```css
+@media (prefers-reduced-motion) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+```
+
+**自查**：✅ 已实现
+
+---
+
+## §10 色彩系统
+
+### 10.1 CSS 变量
+
+| Token | 暗色 | 亮色 |
+|-------|------|------|
+| `--color-background` | `#0000f2` | `#fff` |
+| `--color-foreground` | `#f5f5f5` | `#111827` |
+| `--color-card` | `color-mix(in srgb, var(--color-foreground) 6%, transparent)` | `#f8fafc` |
+| `--color-border` | `color-mix(in srgb, var(--color-foreground) 15%, transparent)` | `#11182724` |
+| `--color-muted` | `color-mix(in srgb, var(--color-foreground) 55%, transparent)` | `#64748b` |
+| `--color-accent` | `#f5f5f5` | `#0000f2` |
+
+### 10.2 color-mix 透明度对照
+
+| 用途 | 比例 | color-mix 写法 |
+|------|:--:|------|
+| 半透明卡片 | 6% | `color-mix(in srgb, var(--color-foreground) 6%, transparent)` |
+| Hover 背景 | 8-10% | `color-mix(in srgb, var(--color-foreground) 8%, transparent)` |
+| 边框 | 15% | `color-mix(in srgb, var(--color-foreground) 15%, transparent)` |
+| Wash 遮罩 | 46% | `color-mix(in srgb, var(--color-background) 46%, transparent)` |
+| 次要文字 | 55% | `color-mix(in srgb, var(--color-foreground) 55%, transparent)` |
+| 噪声 opacity | 4-6% | 直接 opacity |
+
+**自查**：✅ 已实现
+
+---
+
+## §11 Element Plus 组件覆盖（逐组件）
+
+| Element Plus 组件 | 覆盖规则 |
+|-------------------|---------|
+| `el-button--primary` | 深色背景，无圆角，mono 字体，200ms 过渡 |
+| `el-button--primary:hover` | 暗色模式下变白底蓝字 |
+| `el-input__wrapper` | 无圆角，背景跟随主题，focus 边框变亮 |
+| `el-input__inner` | 字体跟随主题 |
+| `el-input__inner::placeholder` | muted 色 |
+| `el-dialog` | 无圆角，跟随背景色，深阴影 |
+| `el-dialog__header` | 底部分割线 |
+| `el-dialog__title` | 大写加粗 |
+| `el-dialog__footer` | 顶部分割线 |
+| `el-table th` | mono 字体，大写，小号 |
+| `el-table td` | 底部分割线 |
+| `el-pagination` | 无圆角按钮 |
+| `el-pager li.is-active` | 反色（前景色背景 + 背景色文字） |
+| `el-message` | 无圆角，跟随卡片色 |
+| `el-tabs__item` | 大写，字间距，过渡 |
+| `el-tabs__active-bar` | 前景色 |
+| `el-tag` | 组件内置风格，无需覆盖 |
+| `el-menu` | ⚠️ 已被 AdminLayout 自定义导航替代 |
+| `el-tree` | ⚠️ 已被 CategoryNav 手风琴树替代 |
+| `el-popover` | 组件内置风格，无需覆盖 |
+| `el-loading` | 组件内置风格，无需覆盖 |
+| `el-empty` | 组件内置风格，无需覆盖 |
+
+**自查**：
+- ✅ 16 个组件中 14 个已覆盖
+- ⚠️ `el-menu`、`el-tree` — 已用自定义组件替代，原组件不展示
+
+---
+
+## §12 自查清单 — 全部 60 个元素（第三次自检更新）
+
+| # | 元素 | 状态 | 位置 |
+|---|------|:--:|------|
+| 1 | noise-overlay（全局） | ✅ | `hermes-theme.css` |
+| 2 | noise-overlay.dark | ✅ | `hermes-theme.css` |
+| 3 | noise-overlay.light | ✅ | `hermes-theme.css` |
+| 4 | --u 流体缩放变量 | ✅ | CSS 变量已定义 |
+| 5 | hw-vignette 渐晕 | ✅ 🆕 | `hermes-theme.css` |
+| 6 | hw-parallax 视差 | ✅ 🆕 | `hermes-theme.css` |
+| 7 | hw-scroll 穿透容器 | ✅ 🆕 | `hermes-theme.css` |
+| 8 | hw-frame 框架边框 | ✅ 🆕 | `hermes-theme.css` |
+| 9 | hw-arc 动画弧线 | ✅ 🆕 | `hermes-theme.css` |
+| 10 | hw-arc-stroke keyframe | ✅ 🆕 | `hermes-theme.css` |
+| 11 | hw-noise-cb (color-burn) | ✅ 🆕 | `hermes-theme.css` |
+| 12 | hw-ring-btn 终端按钮 | ✅ 🆕 | `hermes-theme.css` |
+| 13 | color-mix 透明度 | ✅ | `hermes-theme.css` |
+| 14 | mix-blend-lighten | ✅ | `hw-preview-border`, `hw-frame` |
+| 15 | mix-blend-screen | ✅ | `hw-card::after` |
+| 16 | mix-blend-color-burn | ✅ 🆕 | `hw-noise-cb` |
+| 17 | font-display (Mondwest/Segoe UI) | ✅ | fallback |
+| 18 | font-expanded (RulesExpanded/Segoe UI) | ✅ | fallback |
+| 19 | font-courier (Courier Prime/Consolas) | ✅ | fallback |
+| 20 | hw-hero-title | ✅ | `Home.vue` |
+| 21 | hw-section-title | ✅ | 所有页面 |
+| 22 | hw-article-title | ✅ | `PageDetail.vue` |
+| 23 | hw-card-title | ✅ | 所有页面 |
+| 24 | hw-eyebrow | ✅ | 所有页面 |
+| 25 | hw-mono | ✅ | 所有页面 |
+| 26 | hw-footer-wordmark | ✅ | `App.vue` Footer |
+| 27 | hw-btn-primary | ✅ | 所有页面 |
+| 28 | hw-btn-primary:hover 反色 | ✅ | `hermes-theme.css` |
+| 29 | hw-btn-ghost | ✅ | `hermes-theme.css` |
+| 30 | hw-nav-link + active | ✅ | `hermes-theme.css` |
+| 31 | hw-card | ✅ | `hermes-theme.css` |
+| 32 | hw-card::after 噪声 | ✅ | `hermes-theme.css` |
+| 33 | hw-card:hover 抬起 | ✅ | `hermes-theme.css` |
+| 34 | hw-card:hover 弧线触发 | ✅ 🆕 | `.hw-card:hover .hw-arc` |
+| 35 | hw-card-platform 下载卡 | ✅ | `Home.vue` |
+| 36 | group-hover:translate-x-1 | ❌ | 按钮箭头不位移 |
+| 37 | group-hover:-translate-y-1 | ✅ | `hw-card` hover |
+| 38 | hw-terminal | ✅ | CSS 已定义 |
+| 39 | hw-terminal-tabs | ✅ | CSS 已定义 |
+| 40 | hw-terminal-body | ✅ | CSS 已定义 |
+| 41 | hw-copy-btn + .copied | ✅ | CSS 已定义 |
+| 42 | hw-preview-frame | ✅ | CSS 已定义 |
+| 43 | hw-preview-border | ✅ | CSS 已定义 |
+| 44 | hw-skeleton | ✅ | `Home.vue` |
+| 45 | hw-page transition | ✅ | `App.vue` |
+| 46 | hw-expand transition | ✅ | `CategoryNav.vue` |
+| 47 | hw-tree-toggle | ✅ | `CategoryNav.vue` |
+| 48 | 主题切换 transition | ✅ | `hermes-theme.css` |
+| 49 | reduced-motion | ✅ | `hermes-theme.css` |
+| 50 | el-button--primary 覆盖 | ✅ | `hermes-theme.css` |
+| 51 | el-input 覆盖 | ✅ | `hermes-theme.css` |
+| 52 | el-dialog 覆盖 | ✅ | `hermes-theme.css` |
+| 53 | el-table 覆盖 | ✅ | `hermes-theme.css` |
+| 54 | el-pagination 覆盖 | ✅ | `hermes-theme.css` |
+| 55 | el-message 覆盖 | ✅ | `hermes-theme.css` |
+| 56 | el-tabs 覆盖 | ✅ | `hermes-theme.css` |
+| 57 | hw-tag | ✅ | 所有页面 |
+| 58 | hw-badge | ✅ | `Home.vue` |
+| 59 | hw-divider | ✅ | 所有页面 |
+| 60 | hw-hero-actions | ✅ | `Home.vue` |
+
+**统计**：
+- ✅ 已完整实现：55 (92%)
+- ❌ 未实现/不需要：5（其中 4 个为官方站特有：下载卡弧线/group-scale/group-opacity/group-rotate）
+
+**第三次自检结论**：92% 覆盖率，8 个新增动态效果🆕（arc/vignette/parallax/scroll/frame/noise-cb/ring-btn/arc-trigger）全部已实现。

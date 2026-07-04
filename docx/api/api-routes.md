@@ -59,6 +59,7 @@ PageResult<T> {
 | `POST` | `/api/auth/login` | `{ username, password }` | `AuthResponse { token, username, role, userId }` | — |
 | `POST` | `/api/auth/register` | `{ username, email, password }` | `Void` | — |
 | `POST` | `/api/auth/reset-admin-password` | — | `String` | ⚠️ 无 |
+| `POST` | `/api/auth` | — | — | — |
 
 ---
 
@@ -118,6 +119,8 @@ PageResult<T> {
 |------|------|------|:--:|
 | `GET` | `/api/categories` | 树形 `List<CategoryDTO>`（含 children） | — |
 | `GET` | `/api/categories/{id}` | `CategoryDTO` | — |
+| `PUT` | `/api/categories/{id}` | `CategoryDTO` | ADMIN |
+| `DELETE` | `/api/categories/{id}` | `Void` | ADMIN |
 
 ---
 
@@ -126,6 +129,8 @@ PageResult<T> {
 | 方法 | 路径 | 返回 | 认证 |
 |------|------|------|:--:|
 | `GET` | `/api/tags` | `List<Tag>` | — |
+| `DELETE` | `/api/tags/{id}` | `Void` | ADMIN |
+| `POST` | `/api/tags/merge` | `Void` | ADMIN |
 
 ---
 
@@ -134,6 +139,7 @@ PageResult<T> {
 | 方法 | 路径 | 返回 | 认证 |
 |------|------|------|:--:|
 | `GET` | `/api/users/me` | `User` | ✓ |
+| `PUT` | `/api/users/me/password` | `Void` | ✓ |
 
 ---
 
@@ -141,10 +147,12 @@ PageResult<T> {
 
 | 方法 | 路径 | 返回 | 认证 |
 |------|------|------|:--:|
-| `GET` | `/api/messages` | `?page=&size=` | ✓ |
-| `GET` | `/api/messages/unread/count` | `int` | ✓ |
+| `GET` | `/api/messages` | `List<MessageDTO>` | ✓ |
+| `GET` | `/api/messages/unread` | `List<MessageDTO>` | ✓ |
+| `GET` | `/api/messages/unread-count` | `int` | ✓ |
 | `PUT` | `/api/messages/{id}/read` | — | ✓ |
-| `PUT` | `/api/messages/read/all` | — | ✓ |
+| `PUT` | `/api/messages/all/read` | — | ✓ |
+| `DELETE` | `/api/messages/{id}` | `Void` | ✓ |
 
 ---
 

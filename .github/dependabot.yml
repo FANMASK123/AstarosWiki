@@ -1,0 +1,36 @@
+version: 2
+updates:
+  # ── Maven (后端) ──────────────────────────
+  - package-ecosystem: maven
+    directory: "/AstarosWiki"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Shanghai
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - backend
+
+  # ── npm / pnpm (前端) ─────────────────────
+  - package-ecosystem: npm
+    directory: "/astaros-wiki-frontend"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Shanghai
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - frontend
+
+  # ── GitHub Actions ─────────────────────────
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: monthly
+    labels:
+      - dependencies
+      - ci

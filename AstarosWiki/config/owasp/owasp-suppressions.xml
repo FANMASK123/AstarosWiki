@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+    <!--
+        OWASP 误报抑制规则
+        用法：mvn dependency-check:check
+        报告：target/dependency-check-report.html
+    -->
+    <!-- 示例：抑制已知误报
+    <suppress>
+        <notes>Spring Boot 3.2.5 CVE-2024-xxx — 不影响本项目（未使用受影响模块）</notes>
+        <cve>CVE-2024-xxxx</cve>
+    </suppress>
+    -->
+</suppressions>

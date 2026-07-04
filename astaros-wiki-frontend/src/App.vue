@@ -68,7 +68,11 @@
 
     <!-- Main content -->
     <main class="app-main">
-      <router-view />
+      <router-view v-slot="{ Component }">
+        <Transition name="hw-page" mode="out-in">
+          <component :is="Component" />
+        </Transition>
+      </router-view>
     </main>
 
     <!-- Footer -->

@@ -2,12 +2,12 @@
   <div class="login-page">
     <div class="login-container">
       <div class="login-header">
-        <p class="section-label">账户</p>
+        <p class="hw-eyebrow">账户</p>
         <h1 class="login-title">登录</h1>
         <p class="login-desc">登录您的阿斯塔洛斯 Wiki 账户以创建和管理页面内容。</p>
       </div>
 
-      <div class="hermes-card login-card">
+      <div class="hw-card login-card">
         <el-form :model="loginForm" :rules="rules" ref="formRef" @submit.prevent="handleLogin">
           <el-form-item prop="username">
             <el-input v-model="loginForm.username" placeholder="用户名" :prefix-icon="User" />
@@ -26,7 +26,7 @@
           <el-form-item>
             <button
               type="submit"
-              class="btn-hermes-primary"
+              class="hw-btn-primary"
               style="width: 100%; justify-content: center"
               :disabled="loading"
             >

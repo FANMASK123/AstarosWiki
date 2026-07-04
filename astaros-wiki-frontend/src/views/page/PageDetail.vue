@@ -9,15 +9,15 @@
     <div v-else-if="page" class="detail-content">
       <article class="hermes-card detail-card">
         <!-- Meta label -->
-        <p class="section-label">页面</p>
+        <p class="hw-eyebrow">页面</p>
 
         <!-- Title -->
         <h1 class="detail-title">{{ page.title }}</h1>
 
         <!-- Tags -->
         <div class="detail-tags">
-          <span class="hermes-tag" v-if="page.categoryName">{{ page.categoryName }}</span>
-          <span class="hermes-tag" v-for="tag in page.tags" :key="tag">{{ tag }}</span>
+          <span class="hw-tag" v-if="page.categoryName">{{ page.categoryName }}</span>
+          <span class="hw-tag" v-for="tag in page.tags" :key="tag">{{ tag }}</span>
         </div>
 
         <!-- Meta -->
@@ -29,20 +29,20 @@
         </div>
 
         <!-- Divider -->
-        <hr class="hermes-divider" />
+        <hr class="hw-divider" />
 
         <!-- Content -->
         <div class="detail-body" v-html="page.content"></div>
 
         <!-- Actions -->
         <div v-if="canEdit" class="detail-actions">
-          <router-link :to="`/page/${page.slug}/edit`" class="btn-hermes-outline">
+          <router-link :to="`/page/${page.slug}/edit`" class="hw-btn-ghost">
             编辑 <span>→</span>
           </router-link>
-          <router-link :to="`/page/${page.slug}/history`" class="btn-hermes-outline">
+          <router-link :to="`/page/${page.slug}/history`" class="hw-btn-ghost">
             历史版本
           </router-link>
-          <button v-if="userStore.isAdmin()" class="btn-hermes-outline" @click="handleDelete">
+          <button v-if="userStore.isAdmin()" class="hw-btn-ghost" @click="handleDelete">
             删除
           </button>
         </div>
@@ -50,8 +50,8 @@
 
       <!-- Related pages -->
       <section class="related-section">
-        <p class="section-label">相关</p>
-        <h2 class="section-title">相关页面</h2>
+        <p class="hw-eyebrow">相关</p>
+        <h2 class="hw-section-title">相关页面</h2>
         <div v-if="relatedPages.length === 0" class="text-muted" style="padding: 20px 0">
           暂无相关页面
         </div>
@@ -63,7 +63,7 @@
             class="hermes-card related-card"
           >
             <h3 class="related-title">{{ related.title }}</h3>
-            <span class="hermes-tag" v-if="related.categoryName">{{ related.categoryName }}</span>
+            <span class="hw-tag" v-if="related.categoryName">{{ related.categoryName }}</span>
           </router-link>
         </div>
       </section>
@@ -71,10 +71,10 @@
 
     <!-- Empty -->
     <div v-else class="empty-state">
-      <p class="section-label">404</p>
-      <h2 class="section-title">页面不存在</h2>
+      <p class="hw-eyebrow">404</p>
+      <h2 class="hw-section-title">页面不存在</h2>
       <p class="text-muted">您查找的页面不存在或已被删除。</p>
-      <router-link to="/" class="btn-hermes-outline" style="margin-top: 20px; display: inline-flex">
+      <router-link to="/" class="hw-btn-ghost" style="margin-top: 20px; display: inline-flex">
         返回首页
       </router-link>
     </div>

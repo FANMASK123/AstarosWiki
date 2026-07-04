@@ -1,8 +1,8 @@
 <template>
   <div class="category-page">
     <div class="category-header">
-      <p class="section-label">分类</p>
-      <h1 class="section-title">{{ displayCategory?.name || '分类页面' }}</h1>
+      <p class="hw-eyebrow">分类</p>
+      <h1 class="hw-section-title">{{ displayCategory?.name || '分类页面' }}</h1>
       <p class="text-muted" v-if="displayCategory?.description">
         {{ displayCategory.description }}
       </p>
@@ -21,7 +21,7 @@
       </button>
     </div>
 
-    <hr class="hermes-divider" />
+    <hr class="hw-divider" />
 
     <!-- Loading -->
     <div v-if="loading" class="loading-state">
@@ -30,8 +30,8 @@
 
     <!-- Empty -->
     <div v-else-if="pages.length === 0" class="empty-state">
-      <p class="section-label">0 页面</p>
-      <h2 class="section-title">暂无页面</h2>
+      <p class="hw-eyebrow">0 页面</p>
+      <h2 class="hw-section-title">暂无页面</h2>
       <p class="text-muted">该分类下暂未发布任何页面。</p>
     </div>
 
@@ -54,7 +54,7 @@
     <!-- Pagination -->
     <div v-if="totalPages > 1" class="pagination-row">
       <button
-        class="btn-hermes-outline"
+        class="hw-btn-ghost"
         :disabled="currentPage === 0"
         @click="changePage(currentPage - 1)"
       >
@@ -64,7 +64,7 @@
         {{ currentPage + 1 }} / {{ totalPages }}
       </span>
       <button
-        class="btn-hermes-outline"
+        class="hw-btn-ghost"
         :disabled="currentPage >= totalPages - 1"
         @click="changePage(currentPage + 1)"
       >

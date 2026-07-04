@@ -2,7 +2,7 @@
   <div class="register-page">
     <div class="register-container">
       <div class="register-header">
-        <p class="section-label">账户</p>
+        <p class="hw-eyebrow">账户</p>
         <h1 class="register-title">注册创作者</h1>
         <p class="register-desc">创建账户以开始在阿斯塔洛斯 Wiki 中编写页面内容。</p>
       </div>
@@ -45,7 +45,7 @@
           <el-form-item>
             <button
               type="submit"
-              class="btn-hermes-primary"
+              class="hw-btn-primary"
               style="width: 100%; justify-content: center"
               :disabled="loading"
             >

@@ -1,8 +1,8 @@
 <template>
   <div class="profile-page">
     <div class="profile-header">
-      <p class="section-label">账户</p>
-      <h1 class="section-title">个人中心</h1>
+      <p class="hw-eyebrow">账户</p>
+      <h1 class="hw-section-title">个人中心</h1>
     </div>
 
     <div class="hermes-card profile-card">
@@ -33,7 +33,7 @@
               <el-input v-model="passwordForm.confirmPassword" type="password" show-password />
             </el-form-item>
             <el-form-item>
-              <button class="btn-hermes-primary" @click="handleChangePassword">
+              <button class="hw-btn-primary" @click="handleChangePassword">
                 修改密码 <span>→</span>
               </button>
             </el-form-item>

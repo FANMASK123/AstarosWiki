@@ -1,8 +1,8 @@
 <template>
   <div class="search-page">
     <div class="search-header">
-      <p class="section-label">搜索</p>
-      <h1 class="section-title">搜索结果</h1>
+      <p class="hw-eyebrow">搜索</p>
+      <h1 class="hw-section-title">搜索结果</h1>
     </div>
 
     <!-- Search box -->
@@ -50,7 +50,7 @@
         >
           <h3 class="result-title">{{ page.title }}</h3>
           <div class="result-meta">
-            <span class="hermes-tag" v-if="page.categoryName">{{ page.categoryName }}</span>
+            <span class="hw-tag" v-if="page.categoryName">{{ page.categoryName }}</span>
             <span class="text-muted">作者：{{ page.authorName }}</span>
             <span class="text-muted">{{ formatDate(page.updatedAt) }}</span>
           </div>
@@ -61,7 +61,7 @@
       <!-- Pagination -->
       <div v-if="totalPages > 1" class="search-pagination">
         <button
-          class="btn-hermes-outline"
+          class="hw-btn-ghost"
           :disabled="currentPage === 0"
           @click="goToPage(currentPage - 1)"
         >
@@ -71,7 +71,7 @@
           {{ currentPage + 1 }} / {{ totalPages }}
         </span>
         <button
-          class="btn-hermes-outline"
+          class="hw-btn-ghost"
           :disabled="currentPage >= totalPages - 1"
           @click="goToPage(currentPage + 1)"
         >
@@ -82,8 +82,8 @@
 
     <!-- Empty -->
     <div v-else-if="searched" class="empty-state">
-      <p class="section-label">0 结果</p>
-      <h2 class="section-title">未找到相关页面</h2>
+      <p class="hw-eyebrow">0 结果</p>
+      <h2 class="hw-section-title">未找到相关页面</h2>
       <p class="text-muted">尝试使用其他关键词搜索。</p>
     </div>
   </div>

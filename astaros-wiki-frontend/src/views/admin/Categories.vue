@@ -257,13 +257,12 @@ const migrateToId = ref<number | null>(null)
 async function handleMigrate() {
   if (!deleteTarget.value || !migrateToId.value) { ElMessage.warning('请选择目标分类'); return }
   try {
-    // Call delete with migration target
-    const res = await deleteCategory(deleteTarget.value.id)
+    const res = await deleteCategory(deleteTarget.value.id, migrateToId.value)
     if (res.code === 200) {
-      ElMessage.success(`已将"${deleteTarget.value.name}"下的页面迁移并删除该分类`)
+      ElMessage.success(`已将"${deleteTarget.value.name}"下的页面迁移至目标分类并删除`)
       migrationVisible.value = false; deleteTarget.value = null; migrateToId.value = null
       await categoryStore.fetchCategories()
-    } else ElMessage.error(res.msg || '删除失败')
+    } else ElMessage.error(res.msg || '操作失败')
   } catch (e: any) { console.error(e); ElMessage.error('操作失败') }
 }
 

@@ -5,6 +5,7 @@ import com.example.astaroswiki.dto.category.CategoryDTO;
 import com.example.astaroswiki.entity.Category;
 import com.example.astaroswiki.exception.BusinessException;
 import com.example.astaroswiki.repository.CategoryRepository;
+import com.example.astaroswiki.repository.PageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ public class CategoryService {
 
     private static final int MAX_CATEGORY_LEVEL = 3;
     private final CategoryRepository categoryRepository;
+    private final PageRepository pageRepository;
     private final Collator chineseCollator = Collator.getInstance(Locale.CHINA);
 
     public List<CategoryDTO> getAllCategories() {
@@ -96,13 +98,21 @@ public class CategoryService {
     }
 
     @Transactional
-    public void deleteCategory(Long id) {
+    public void deleteCategory(Long id, Long migrateTo) {
         Category category = categoryRepository.findById(id)
             .orElseThrow(() -> new BusinessException("分类不存在"));
 
         List<Category> children = categoryRepository.findByParentId(id);
         if (!children.isEmpty()) {
-            throw new BusinessException("该分类下还有子分类，无法删除");
+            throw new BusinessException("该分类下还有子分类，请先删除子分类");
+        }
+
+        // 如果有迁移目标，先迁移页面
+        if (migrateTo != null) {
+            Category target = categoryRepository.findById(migrateTo)
+                .orElseThrow(() -> new BusinessException("目标分类不存在"));
+            int count = pageRepository.migratePagesToCategory(id, migrateTo);
+            // 日志：迁移了多少页面
         }
 
         categoryRepository.delete(category);

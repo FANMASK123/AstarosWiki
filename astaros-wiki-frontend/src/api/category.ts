@@ -42,7 +42,8 @@ export function updateCategory(
   return put<CategoryDTO>(`/categories/${id}`, data)
 }
 
-// 删除分类
-export function deleteCategory(id: number): Promise<Result<void>> {
-  return deleteRequest<void>(`/categories/${id}`)
+// 删除分类（可选迁移页面到目标分类）
+export function deleteCategory(id: number, migrateTo?: number): Promise<Result<void>> {
+  const url = migrateTo ? `/categories/${id}?migrateTo=${migrateTo}` : `/categories/${id}`
+  return deleteRequest<void>(url)
 }

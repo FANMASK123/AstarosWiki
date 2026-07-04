@@ -61,11 +61,14 @@ public class CategoryController {
         return Result.success(category);
     }
 
-    @Operation(summary = "删除分类")
+    @Operation(summary = "删除分类（可选：迁移页面到目标分类）")
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public Result<Void> deleteCategory(@PathVariable Long id) {
-        categoryService.deleteCategory(id);
+    public Result<Void> deleteCategory(
+        @PathVariable Long id,
+        @RequestParam(required = false) Long migrateTo
+    ) {
+        categoryService.deleteCategory(id, migrateTo);
         return Result.success();
     }
 }

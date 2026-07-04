@@ -78,4 +78,9 @@ public interface PageRepository extends JpaRepository<WikiPage, Long> {
         + "last_viewed_at = NOW(), updated_at = updated_at WHERE id = :id",
         nativeQuery = true)
     void updateViewCount(@Param("id") Long id);
+
+    // 批量迁移页面到另一个分类
+    @Modifying
+    @Query("UPDATE WikiPage p SET p.categoryId = :targetCategoryId WHERE p.categoryId = :sourceCategoryId")
+    int migratePagesToCategory(@Param("sourceCategoryId") Long sourceCategoryId, @Param("targetCategoryId") Long targetCategoryId);
 }

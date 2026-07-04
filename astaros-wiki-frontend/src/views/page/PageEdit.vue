@@ -5,9 +5,37 @@
       <el-form :model="pageForm" label-width="100px" class="mt-16">
         <el-form-item label="标题"><el-input v-model="pageForm.title" /></el-form-item>
         <el-form-item label="分类">
-          <el-select v-model="pageForm.categoryId" placeholder="选择分类" style="width:100%">
-            <el-option v-for="c in categoryOptions" :key="c.id" :label="c.name" :value="c.id" />
-          </el-select>
+          <!-- 三级级联选择器 -->
+          <div class="cascade-picker">
+            <div class="cascade-display" @click="showCascade = !showCascade">
+              <span v-if="selectedPath.length">{{ selectedPath.join(' → ') }}</span>
+              <span v-else class="text-muted">选择分类（可选三级）</span>
+              <span class="cascade-arrow" :class="{open:showCascade}">▾</span>
+            </div>
+            <Transition name="drop">
+              <div v-if="showCascade" class="cascade-drop">
+                <div class="cascade-col">
+                  <div v-for="c in categoryOptions" :key="c.id"
+                    class="cascade-opt" :class="{sel: selL1===c.id}"
+                    @click="pickL1(c)">{{ c.name }}
+                    <span v-if="c.children?.length" class="cascade-next">▸</span>
+                  </div>
+                </div>
+                <div v-if="selL1Children.length" class="cascade-col">
+                  <div v-for="c in selL1Children" :key="c.id"
+                    class="cascade-opt" :class="{sel: selL2===c.id}"
+                    @click="pickL2(c)">{{ c.name }}
+                    <span v-if="c.children?.length" class="cascade-next">▸</span>
+                  </div>
+                </div>
+                <div v-if="selL2Children.length" class="cascade-col">
+                  <div v-for="c in selL2Children" :key="c.id"
+                    class="cascade-opt" :class="{sel: selL3===c.id}"
+                    @click="pickL3(c)">{{ c.name }}</div>
+                </div>
+              </div>
+            </Transition>
+          </div>
         </el-form-item>
         <el-form-item label="标签">
           <el-select v-model="pageForm.tagNames" multiple filterable allow-create placeholder="选择标签" style="width:100%">
@@ -32,7 +60,7 @@
       <div v-if="historyLoading" class="loading"><div class="spinner"></div></div>
       <div v-else-if="historyVersions.length===0" class="empty"><p class="text-muted">暂无历史版本</p></div>
       <div v-else class="stack">
-        <div v-for="v in historyVersions" :key="v.id" class="card" :style="{borderColor: v.versionNumber===currentPageVersion ? 'var(--fg)' : ''}">
+        <div v-for="v in historyVersions" :key="v.id" class="card" :style="{ borderColor: v.versionNumber===currentPageVersion ? 'var(--fg)' : '' }">
           <div class="row" style="justify-content:space-between">
             <div><strong>版本 {{ v.versionNumber }}</strong><br><span class="mono">{{ fmt(v.createdAt) }}</span></div>
             <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" @click="rollbackTo(v.versionNumber)">回滚到此版本</button>
@@ -62,6 +90,23 @@ const loading = ref(false)
 
 const pageForm = reactive({ title:'', content:'', categoryId:null as number|null, tagNames:[] as string[] })
 const categoryOptions = ref<CategoryDTO[]>([])
+
+// ── Cascade picker state ──
+const showCascade = ref(false)
+const selL1 = ref<number|null>(null); const selL2 = ref<number|null>(null); const selL3 = ref<number|null>(null)
+const selL1Children = computed(() => categoryOptions.value.find(c=>c.id===selL1.value)?.children??[])
+const selL2Children = computed(() => selL1Children.value.find(c=>c.id===selL2.value)?.children??[])
+const selectedPath = computed(() => {
+  const p: string[] = []
+  const l1 = categoryOptions.value.find(c=>c.id===selL1.value); if (l1) p.push(l1.name)
+  const l2 = selL1Children.value.find(c=>c.id===selL2.value); if (l2) p.push(l2.name)
+  const l3 = selL2Children.value.find(c=>c.id===selL3.value); if (l3) p.push(l3.name)
+  return p
+})
+
+function pickL1(c: CategoryDTO) { selL1.value=c.id; selL2.value=null; selL3.value=null; if (!c.children?.length) { pageForm.categoryId=c.id; showCascade.value=false } }
+function pickL2(c: CategoryDTO) { selL2.value=c.id; selL3.value=null; if (!c.children?.length) { pageForm.categoryId=c.id; showCascade.value=false } }
+function pickL3(c: CategoryDTO) { selL3.value=c.id; pageForm.categoryId=c.id; showCascade.value=false }
 
 const showHistory = ref(false); const historyLoading = ref(false)
 const historyVersions = ref<PageVersion[]>([]); const currentPageVersion = ref(0)

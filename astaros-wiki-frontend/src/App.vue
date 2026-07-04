@@ -1,6 +1,6 @@
 <template>
   <div id="app" class="app-shell">
-    <div class="starfield"></div>
+    <!-- <div class="starfield"></div> -->
 
     <header class="app-header">
       <router-link to="/" class="app-header-brand">阿斯塔洛斯 Wiki</router-link>

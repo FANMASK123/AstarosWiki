@@ -43,6 +43,8 @@
       <div class="app-footer-bottom"><span>Astaros Wiki · Vue 3 + Spring Boot</span><span>MIT License · 2026</span></div>
     </footer>
 
+    <MobileMenu />
+
     <button v-if="userStore.isLoggedIn()" class="mailbox-trigger" @click="mailOpen=!mailOpen">✉</button>
     <div v-if="mailOpen && userStore.isLoggedIn()" class="mailbox-panel"><Mailbox @close="mailOpen=false" /></div>
   </div>
@@ -55,6 +57,7 @@ import { useUserStore } from './stores/user'
 import { Search } from '@element-plus/icons-vue'
 import Sidebar from './components/Sidebar.vue'
 import Mailbox from './components/Mailbox.vue'
+import MobileMenu from './components/MobileMenu.vue'
 
 const router = useRouter(); const userStore = useUserStore()
 const kw = ref(''); const mailOpen = ref(false); const t = ref<'dark'|'light'>('dark')

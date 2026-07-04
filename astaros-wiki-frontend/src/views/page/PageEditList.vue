@@ -223,7 +223,7 @@ onMounted(() => {
 .page-edit-list h2 {
   font-size: 20px;
   font-weight: 600;
-  color: var(--var(--color-foreground));
+  color: var(--fg);
   margin: 0 0 24px 0;
 }
 
@@ -238,7 +238,7 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   padding: 60px 0;
-  color: var(--var(--color-muted));
+  color: var(--muted);
 }
 
 .empty p {
@@ -250,7 +250,7 @@ onMounted(() => {
 }
 
 .page-title-link {
-  color: var(--var(--color-foreground));
+  color: var(--fg);
   text-decoration: none;
 }
 
@@ -259,7 +259,7 @@ onMounted(() => {
 }
 
 .btn-edit {
-  color: var(--var(--color-foreground));
+  color: var(--fg);
   font-size: 12px;
   padding: 4px 8px;
   margin-right: 8px;
@@ -267,7 +267,7 @@ onMounted(() => {
 
 .el-dropdown-link {
   cursor: pointer;
-  color: var(--var(--color-foreground));
+  color: var(--fg);
   font-size: 12px;
   padding: 4px 8px;
 }

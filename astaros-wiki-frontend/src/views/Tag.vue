@@ -1,40 +1,19 @@
 <template>
   <div>
-    <div class="hw-card">
-      <div class="hw-eyebrow">标签：{{ tagName }}</div>
-      <div class="hw-card-content">包含该标签的所有页面</div>
+    <p class="eyebrow">标签：{{ tagName }}</p>
+    <h2 class="section-title">包含该标签的页面</h2>
+    <div v-if="loading" class="loading"><div class="spinner"></div></div>
+    <div v-else-if="pages.length===0" class="empty"><h2 class="section-title">暂无页面</h2></div>
+    <div v-else class="stack">
+      <router-link v-for="p in pages" :key="p.id" :to="`/page/${p.slug}`" class="card">
+        <div class="card-title">{{ p.title }}</div>
+        <div class="row mt-16"><span class="mono">{{ p.categoryName || '未分类' }}</span><span class="mono">{{ p.authorName }}</span><span class="mono">{{ fmt(p.updatedAt) }}</span></div>
+      </router-link>
     </div>
-
-    <div v-if="loading">加载中...</div>
-    <div v-else-if="pages.length === 0">
-      <el-empty description="该标签下暂无页面" />
-    </div>
-    <ul v-else class="hw-list">
-      <li v-for="page in pages" :key="page.id" class="hw-list-item">
-        <router-link
-          :to="`/page/${page.slug}`"
-          style="color: var(--var(--color-foreground)); text-decoration: none"
-        >
-          <div style="font-weight: bold; font-size: 18px">{{ page.title }}</div>
-          <div style="color: var(--var(--color-muted)); font-size: 14px">
-            {{ page.categoryName || '未分类' }} | 作者：{{ page.authorName }} |
-            {{ formatDate(page.updatedAt) }}
-          </div>
-        </router-link>
-      </li>
-    </ul>
-
-    <div v-if="totalPages > 1" class="hw-pagination">
-      <el-button :disabled="currentPage === 0" @click="handlePageChange(currentPage - 1)">
-        上一页
-      </el-button>
-      <span style="padding: 8px 16px">第 {{ currentPage + 1 }} / {{ totalPages }} 页</span>
-      <el-button
-        :disabled="currentPage >= totalPages - 1"
-        @click="handlePageChange(currentPage + 1)"
-      >
-        下一页
-      </el-button>
+    <div v-if="totalPages>1" class="pagination-row">
+      <button class="btn btn-ghost" :disabled="cur===0" @click="go(cur-1)">←</button>
+      <span class="mono">{{ cur+1 }}/{{ totalPages }}</span>
+      <button class="btn btn-ghost" :disabled="cur>=totalPages-1" @click="go(cur+1)">→</button>
     </div>
   </div>
 </template>
@@ -46,38 +25,17 @@ import { getPagesByTag } from '../api/page'
 import type { PageDTO } from '../api/page'
 
 const route = useRoute()
-const tagName = ref('')
+const tagName = ref(route.params.name as string)
 const pages = ref<PageDTO[]>([])
 const loading = ref(true)
-const currentPage = ref(0)
+const cur = ref(0)
 const totalPages = ref(0)
 
-onMounted(async () => {
-  tagName.value = route.params.name as string
-  await loadPages()
-})
-
-const loadPages = async () => {
+onMounted(async () => { await load() })
+async function load() {
   loading.value = true
-  try {
-    const res = await getPagesByTag(tagName.value, currentPage.value, 10)
-    if (res.code === 200) {
-      pages.value = res.data.content
-      totalPages.value = res.data.totalPages
-    }
-  } catch (error) {
-    console.error('获取页面失败:', error)
-  } finally {
-    loading.value = false
-  }
+  try { const r = await getPagesByTag(tagName.value, cur.value, 10); if (r.code===200) { pages.value=r.data.content; totalPages.value=r.data.totalPages } } catch(e) { console.error(e) } finally { loading.value=false }
 }
-
-const handlePageChange = async (page: number) => {
-  currentPage.value = page
-  await loadPages()
-}
-
-const formatDate = (date: string) => {
-  return new Date(date).toLocaleDateString('zh-CN')
-}
+async function go(p: number) { cur.value=p; await load() }
+function fmt(d: string) { return new Date(d).toLocaleDateString('zh-CN') }
 </script>

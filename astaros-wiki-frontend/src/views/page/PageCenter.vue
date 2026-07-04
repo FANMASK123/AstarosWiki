@@ -1,88 +1,10 @@
 <template>
-  <div class="page-center">
-    <div class="page-center-nav">
-      <div class="page-center-nav-inner">
-        <router-link
-          to="/pages/create"
-          class="page-center-nav-item"
-          :class="{ active: $route.path === '/pages/create' }"
-        >
-          <el-icon><Plus /></el-icon>
-          <span>页面创建</span>
-        </router-link>
-        <router-link
-          to="/pages/edit"
-          class="page-center-nav-item"
-          :class="{ active: $route.path === '/pages/edit' }"
-        >
-          <el-icon><Edit /></el-icon>
-          <span>页面编辑</span>
-        </router-link>
-        <router-link
-          to="/pages/manage"
-          class="page-center-nav-item"
-          :class="{ active: $route.path === '/pages/manage' }"
-        >
-          <el-icon><Document /></el-icon>
-          <span>页面发布管理</span>
-        </router-link>
-      </div>
+  <div>
+    <div style="display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px">
+      <router-link to="/pages/create" class="btn btn-ghost" style="border-bottom:none;font-size:12px" :style="{fontWeight:$route.path==='/pages/create'?'700':'400'}">创建</router-link>
+      <router-link to="/pages/edit" class="btn btn-ghost" style="border-bottom:none;font-size:12px" :style="{fontWeight:$route.path==='/pages/edit'?'700':'400'}">编辑</router-link>
+      <router-link to="/pages/manage" class="btn btn-ghost" style="border-bottom:none;font-size:12px" :style="{fontWeight:$route.path==='/pages/manage'?'700':'400'}">发布管理</router-link>
     </div>
-
-    <div class="page-center-content">
-      <router-view />
-    </div>
+    <router-view />
   </div>
 </template>
-
-<script setup lang="ts">
-import { Plus, Edit, Document } from '@element-plus/icons-vue'
-</script>
-
-<style scoped>
-.page-center {
-  min-height: 100%;
-}
-
-.page-center-nav {
-  background-color: var(--var(--color-card));
-  border-bottom: 1px solid var(--var(--color-border));
-  position: sticky;
-  top: 56px;
-  z-index: 90;
-}
-
-.page-center-nav-inner {
-  display: flex;
-  gap: 4px;
-  padding: 0 24px;
-  height: 48px;
-  align-items: center;
-}
-
-.page-center-nav-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border-radius: 6px;
-  color: var(--var(--color-muted));
-  text-decoration: none;
-  font-size: 14px;
-  transition: all 0.2s;
-}
-
-.page-center-nav-item:hover {
-  background-color: var(--color-mix(in srgb, var(--color-foreground) 4%, transparent));
-  color: var(--var(--color-foreground));
-}
-
-.page-center-nav-item.active {
-  background-color: var(--var(--color-foreground));
-  color: white;
-}
-
-.page-center-content {
-  padding: 24px;
-}
-</style>

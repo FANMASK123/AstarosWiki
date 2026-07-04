@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="hw-eyebrow">操作日志</div>
+    <div class="eyebrow">操作日志</div>
 
     <el-table :data="logs" style="width: 100%">
       <el-table-column prop="id" label="ID" width="80" />
@@ -25,7 +25,7 @@
       </el-table-column>
     </el-table>
 
-    <div class="hw-pagination">
+    <div class="pagination-row">
       <el-button :disabled="currentPage === 0" @click="handlePageChange(currentPage - 1)">
         上一页
       </el-button>

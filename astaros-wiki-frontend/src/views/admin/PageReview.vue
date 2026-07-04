@@ -20,7 +20,7 @@
             <span class="hw-tag" v-for="tag in page.tags" :key="tag">{{ tag }}</span>
           </div>
 
-          <div style="color: var(--var(--color-muted)); font-size: 14px; margin-bottom: 24px">
+          <div style="color: var(--muted); font-size: 14px; margin-bottom: 24px">
             作者：{{ page.authorName }} | 版本：{{ page.version }} | 浏览：{{ page.viewCount }}次 |
             创建时间：{{ formatDate(page.createdAt) }} | 更新时间：{{ formatDate(page.updatedAt) }}
           </div>
@@ -41,11 +41,11 @@
             "
           >
             <div
-              style="font-weight: bold; color: var(--var(--color-foreground)); margin-bottom: 4px"
+              style="font-weight: bold; color: var(--fg); margin-bottom: 4px"
             >
               草稿状态
             </div>
-            <div style="color: var(--var(--color-muted))">
+            <div style="color: var(--muted)">
               {{ page.draftStatus === 'SAVED' ? '已保存（待提交审核）' : '待审核' }}
             </div>
             <div v-if="page.rejectReason" style="color: #f56c6c; margin-top: 8px">
@@ -60,7 +60,7 @@
           <h3 class="review-panel-title">{{ isPublished ? '管理操作' : '审核操作' }}</h3>
 
           <div v-if="!isPublished" style="margin-bottom: 16px">
-            <div style="font-size: 13px; color: var(--var(--color-muted)); margin-bottom: 8px">
+            <div style="font-size: 13px; color: var(--muted); margin-bottom: 8px">
               审核意见（将发送给创作者）
             </div>
             <textarea
@@ -85,7 +85,7 @@
           </div>
 
           <div v-if="isPublished" style="margin-bottom: 16px">
-            <div style="font-size: 13px; color: var(--var(--color-muted)); margin-bottom: 8px">
+            <div style="font-size: 13px; color: var(--muted); margin-bottom: 8px">
               修改建议（将发送给创作者）
             </div>
             <textarea
@@ -130,9 +130,9 @@
 
           <div
             v-if="page.draftStatus === 'SAVED'"
-            style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--var(--color-border))"
+            style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border)"
           >
-            <div style="color: var(--var(--color-muted)); font-size: 13px">
+            <div style="color: var(--muted); font-size: 13px">
               <el-icon><InfoFilled /></el-icon>
               当前页面为保存态，尚未提交审核。点击"批准"将直接发布该页面。
             </div>
@@ -140,9 +140,9 @@
 
           <div
             v-if="isPublished"
-            style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--var(--color-border))"
+            style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border)"
           >
-            <div style="color: var(--var(--color-muted)); font-size: 13px">
+            <div style="color: var(--muted); font-size: 13px">
               <el-icon><InfoFilled /></el-icon>
               当前页面已发布。点击"发送建议"将向创作者发送修改建议，点击"下架"将取消发布状态并通知创作者。
             </div>
@@ -308,7 +308,7 @@ const formatDate = (date: string) => {
 
 .review-page-title {
   font-size: 24px;
-  color: var(--var(--color-foreground));
+  color: var(--fg);
   margin: 0;
 }
 
@@ -348,7 +348,7 @@ const formatDate = (date: string) => {
 }
 
 .document-scroll::-webkit-scrollbar-thumb {
-  background: var(--var(--color-foreground));
+  background: var(--fg);
   border-radius: 3px;
 }
 
@@ -362,7 +362,7 @@ const formatDate = (date: string) => {
   word-wrap: break-word;
   line-height: 1.6;
   font-size: 15px;
-  color: var(--var(--color-foreground));
+  color: var(--fg);
 }
 
 .review-panel {
@@ -371,8 +371,8 @@ const formatDate = (date: string) => {
 
 .review-panel-title {
   font-size: 16px;
-  color: var(--var(--color-foreground));
-  border-bottom: 2px solid var(--var(--color-foreground));
+  color: var(--fg);
+  border-bottom: 2px solid var(--fg);
   padding-bottom: 8px;
   margin-bottom: 16px;
 }

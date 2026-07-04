@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="hw-eyebrow">标签管理</div>
+    <div class="eyebrow">标签管理</div>
 
     <el-input
       v-model="newTagName"

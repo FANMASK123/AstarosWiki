@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="hw-eyebrow">页面管理</div>
+    <div class="eyebrow">页面管理</div>
 
     <el-tabs v-model="activeTab">
       <el-tab-pane label="待审核页面" name="pending">

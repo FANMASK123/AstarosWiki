@@ -31,37 +31,14 @@ a{color:inherit;text-decoration:none}
 
 /* ── Starfield Background (dark mode) ───────────────── */
 #app{position:relative}
-.starfield{pointer-events:none;position:fixed;inset:0;z-index:0;overflow:hidden;display:none}
+.starfield{pointer-events:none;position:fixed;inset:-50%;z-index:0;overflow:hidden;display:none}
 [data-theme='dark'] .starfield{display:block}
-.starfield::before,.starfield::after{
-  content:'';position:absolute;inset:0;
-  background:transparent;
-  animation:drift 120s linear infinite;
-}
-.starfield::before{
-  box-shadow:
-    10vw 8vh 1px rgba(255,255,255,.6), 25vw 15vh 1px rgba(255,255,255,.4), 40vw 5vh 2px rgba(255,255,255,.5),
-    55vw 22vh 1px rgba(255,255,255,.3), 70vw 10vh 2px rgba(255,255,255,.5), 85vw 18vh 1px rgba(255,255,255,.4),
-    5vw 30vh 1px rgba(255,255,255,.5), 20vw 40vh 2px rgba(255,255,255,.3), 35vw 35vh 1px rgba(255,255,255,.6),
-    50vw 45vh 1px rgba(255,255,255,.4), 65vw 30vh 2px rgba(255,255,255,.5), 80vw 42vh 1px rgba(255,255,255,.3),
-    15vw 55vh 1px rgba(255,255,255,.5), 30vw 60vh 2px rgba(255,255,255,.4), 45vw 50vh 1px rgba(255,255,255,.6),
-    60vw 58vh 1px rgba(255,255,255,.3), 75vw 52vh 2px rgba(255,255,255,.5), 90vw 65vh 1px rgba(255,255,255,.4),
-    8vw 70vh 1px rgba(255,255,255,.5), 22vw 78vh 2px rgba(255,255,255,.3), 38vw 72vh 1px rgba(255,255,255,.6),
-    52vw 80vh 1px rgba(255,255,255,.4), 68vw 75vh 2px rgba(255,255,255,.5), 82vw 85vh 1px rgba(255,255,255,.3),
-    12vw 88vh 1px rgba(255,255,255,.5), 28vw 92vh 2px rgba(255,255,255,.4), 44vw 88vh 1px rgba(255,255,255,.6),
-    58vw 95vh 1px rgba(255,255,255,.3), 72vw 90vh 2px rgba(255,255,255,.5), 88vw 95vh 1px rgba(255,255,255,.4);
-}
-.starfield::after{
-  box-shadow:
-    3vw 3vh 2px rgba(200,220,255,.4), 18vw 8vh 1px rgba(200,220,255,.5), 33vw 3vh 1px rgba(200,220,255,.3),
-    48vw 12vh 2px rgba(200,220,255,.6), 63vw 5vh 1px rgba(200,220,255,.4), 78vw 15vh 1px rgba(200,220,255,.5),
-    6vw 25vh 1px rgba(200,220,255,.4), 21vw 30vh 2px rgba(200,220,255,.5), 36vw 22vh 1px rgba(200,220,255,.3),
-    51vw 35vh 1px rgba(200,220,255,.6), 66vw 28vh 2px rgba(200,220,255,.4), 81vw 38vh 1px rgba(200,220,255,.5),
-    9vw 48vh 2px rgba(200,220,255,.3), 24vw 55vh 1px rgba(200,220,255,.6), 39vw 45vh 1px rgba(200,220,255,.4),
-    54vw 52vh 2px rgba(200,220,255,.5), 69vw 48vh 1px rgba(200,220,255,.3), 84vw 58vh 1px rgba(200,220,255,.6);
-    animation:drift 80s linear infinite reverse;
-}
-@keyframes drift{0%{transform:translateY(0)}100%{transform:translateY(-60px)}}
+.starfield-layer{position:absolute;inset:0;transform-origin:50% 50%}
+.starfield-layer:nth-child(1){animation:star-rotate 180s linear infinite}
+.starfield-layer:nth-child(2){animation:star-rotate 120s linear infinite reverse}
+.starfield-layer:nth-child(3){animation:star-rotate 240s linear infinite}
+.starfield-dot{position:absolute;border-radius:50%;background:rgba(200,220,255,.5)}
+@keyframes star-rotate{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
 
 /* ── Scrollbar ──────────────────────────────────────── */
 ::-webkit-scrollbar{width:4px;height:4px}
@@ -71,7 +48,7 @@ a{color:inherit;text-decoration:none}
 /* ══════════════════════════════════════════════════════
    LAYOUT
    ══════════════════════════════════════════════════════ */
-.app-shell{min-height:100vh;display:flex;flex-direction:column;position:relative;z-index:1}
+.app-shell{min-height:100dvh;display:flex;flex-direction:column;position:relative;z-index:1;overflow-x:hidden}
 .app-header{position:fixed;top:0;left:0;right:0;z-index:40;height:52px;background:var(--card);border-bottom:1px solid var(--border);display:flex;align-items:stretch}
 .app-header-brand{display:flex;align-items:center;gap:8px;padding:0 18px;border-right:1px solid var(--border);font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;transition:background .15s;flex-shrink:0}
 .app-header-brand:hover{background:color-mix(in srgb,var(--fg) 4%,transparent)}

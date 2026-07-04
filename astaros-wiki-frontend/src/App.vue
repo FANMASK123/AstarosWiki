@@ -1,6 +1,10 @@
 <template>
   <div id="app" class="app-shell">
-    <div class="starfield"></div>
+    <div class="starfield">
+      <div class="starfield-layer"><div class="starfield-dot" style="left:15%;top:10%;width:2px;height:2px"></div><div class="starfield-dot" style="left:35%;top:25%;width:1px;height:1px"></div><div class="starfield-dot" style="left:55%;top:8%;width:2px;height:2px;background:rgba(255,255,255,.3)"></div><div class="starfield-dot" style="left:75%;top:30%;width:1px;height:1px"></div><div class="starfield-dot" style="left:20%;top:45%;width:2px;height:2px"></div><div class="starfield-dot" style="left:50%;top:50%;width:3px;height:3px;background:rgba(255,255,255,.7)"></div><div class="starfield-dot" style="left:80%;top:55%;width:1px;height:1px"></div><div class="starfield-dot" style="left:10%;top:70%;width:2px;height:2px"></div><div class="starfield-dot" style="left:40%;top:75%;width:1px;height:1px"></div><div class="starfield-dot" style="left:65%;top:65%;width:2px;height:2px;background:rgba(255,255,255,.3)"></div><div class="starfield-dot" style="left:90%;top:80%;width:1px;height:1px"></div><div class="starfield-dot" style="left:30%;top:90%;width:2px;height:2px"></div></div>
+      <div class="starfield-layer"><div class="starfield-dot" style="left:8%;top:15%;width:1px;height:1px"></div><div class="starfield-dot" style="left:28%;top:5%;width:2px;height:2px;background:rgba(200,220,255,.4)"></div><div class="starfield-dot" style="left:48%;top:20%;width:1px;height:1px"></div><div class="starfield-dot" style="left:68%;top:12%;width:2px;height:2px"></div><div class="starfield-dot" style="left:85%;top:35%;width:1px;height:1px"></div><div class="starfield-dot" style="left:12%;top:55%;width:2px;height:2px;background:rgba(200,220,255,.6)"></div><div class="starfield-dot" style="left:38%;top:42%;width:1px;height:1px"></div><div class="starfield-dot" style="left:58%;top:60%;width:2px;height:2px"></div><div class="starfield-dot" style="left:78%;top:48%;width:1px;height:1px"></div><div class="starfield-dot" style="left:22%;top:78%;width:2px;height:2px;background:rgba(200,220,255,.5)"></div><div class="starfield-dot" style="left:62%;top:85%;width:1px;height:1px"></div><div class="starfield-dot" style="left:92%;top:68%;width:2px;height:2px"></div></div>
+      <div class="starfield-layer"><div class="starfield-dot" style="left:18%;top:35%;width:1px;height:1px"></div><div class="starfield-dot" style="left:42%;top:18%;width:2px;height:2px"></div><div class="starfield-dot" style="left:72%;top:42%;width:1px;height:1px;background:rgba(220,230,255,.5)"></div><div class="starfield-dot" style="left:5%;top:62%;width:2px;height:2px"></div><div class="starfield-dot" style="left:32%;top:58%;width:1px;height:1px"></div><div class="starfield-dot" style="left:52%;top:38%;width:2px;height:2px;background:rgba(220,230,255,.4)"></div><div class="starfield-dot" style="left:82%;top:72%;width:1px;height:1px"></div><div class="starfield-dot" style="left:15%;top:85%;width:2px;height:2px"></div><div class="starfield-dot" style="left:45%;top:92%;width:1px;height:1px"></div></div>
+    </div>
 
     <header class="app-header">
       <router-link to="/" class="app-header-brand">阿斯塔洛斯 Wiki</router-link>
@@ -44,11 +48,8 @@
       <div class="app-footer-bottom"><span>Astaros Wiki · Vue 3 + Spring Boot</span><span>MIT License · 2026</span></div>
     </footer>
 
-    <!-- Mailbox floating button -->
     <button v-if="userStore.isLoggedIn()" class="mailbox-trigger" @click="mailOpen=!mailOpen">✉</button>
-    <div v-if="mailOpen && userStore.isLoggedIn()" class="mailbox-panel">
-      <Mailbox @close="mailOpen=false" />
-    </div>
+    <div v-if="mailOpen && userStore.isLoggedIn()" class="mailbox-panel"><Mailbox @close="mailOpen=false" /></div>
   </div>
 </template>
 

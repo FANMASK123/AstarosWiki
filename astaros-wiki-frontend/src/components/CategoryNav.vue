@@ -40,6 +40,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCategoryStore } from '../stores/category'
 
+const emit = defineEmits(['select'])
 const router = useRouter()
 const categoryStore = useCategoryStore()
 const open1 = ref(new Set<number>())
@@ -49,5 +50,5 @@ const categories = computed(() => categoryStore.categories)
 onMounted(async () => { await categoryStore.fetchCategories() })
 function t1(id: number) { if (open1.value.has(id)) open1.value.delete(id); else open1.value.add(id); open1.value = new Set(open1.value) }
 function t2(id: number) { if (open2.value.has(id)) open2.value.delete(id); else open2.value.add(id); open2.value = new Set(open2.value) }
-function nav(path: string) { open1.value = new Set(); open2.value = new Set(); router.push(path) }
+function nav(path: string) { open1.value = new Set(); open2.value = new Set(); emit('select'); router.push(path) }
 </script>

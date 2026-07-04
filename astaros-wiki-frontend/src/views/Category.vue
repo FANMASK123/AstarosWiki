@@ -24,7 +24,7 @@
 
       <!-- L3: grandchildren bar, equal-width -->
       <Transition name="cp-slide">
-        <div v-if="l3Tabs.length > 1" class="cp-bar cp-bar--l3">
+        <div v-if="l3Tabs.length >= 1" class="cp-bar cp-bar--l3">
           <button v-for="t in l3Tabs" :key="t.id"
             class="cp-tab cp-tab--l3"
             @click="goTab(t)">{{ t.name }}</button>
@@ -33,20 +33,20 @@
 
       <div class="divider"></div>
 
-      <!-- Pages -->
-      <div v-if="pages.length" class="stack">
-        <router-link v-for="p in pages" :key="p.id" :to="`/page/${p.slug}`" class="card">
-          <div class="card-title">{{ p.title }}</div>
-          <div class="row mt-8"><span class="mono">{{ p.authorName }}</span><span class="mono">{{ fmt(p.updatedAt) }}</span></div>
-        </router-link>
-      </div>
-      <div v-else class="empty"><h2 class="section-title">暂无页面</h2></div>
-
-      <div v-if="totalPages>1" class="pagination-row">
-        <button class="btn btn-ghost" :disabled="cur===0" @click="go(cur-1)">←</button>
-        <span class="mono">{{ cur+1 }}/{{ totalPages }}</span>
-        <button class="btn btn-ghost" :disabled="cur>=totalPages-1" @click="go(cur+1)">→</button>
-      </div>
+      <div v-if="loading" class="loading"><div class="spinner"></div></div>
+      <template v-else-if="pages.length">
+        <div class="stack">
+          <router-link v-for="p in pages" :key="p.id" :to="`/page/${p.slug}`" class="card">
+            <div class="card-title">{{ p.title }}</div>
+            <div class="row mt-8"><span class="mono">{{ p.authorName }}</span><span class="mono">{{ fmt(p.updatedAt) }}</span></div>
+          </router-link>
+        </div>
+        <div v-if="totalPages>1" class="pagination-row">
+          <button class="btn btn-ghost" :disabled="cur===0" @click="go(cur-1)">←</button>
+          <span class="mono">{{ cur+1 }}/{{ totalPages }}</span>
+          <button class="btn btn-ghost" :disabled="cur>=totalPages-1" @click="go(cur+1)">→</button>
+        </div>
+      </template>
     </template>
   </div>
 </template>
@@ -84,12 +84,13 @@ const currentId = computed(() => cat.value?.id||0)
 // L1: siblings of current category (or parent's children)
 const l1Tabs = computed((): CategoryDTO[] => {
   if (!cat.value) return []
-  const node = find(cat.value.id, store.categories)
   // Find parent in tree
   const p = cat.value.parentId ? find(cat.value.parentId, store.categories) : null
   const sibs = p?.children || store.categories
   if (sibs.length <= 1) return []
-  return [{id:node?.id||0,name:'全部'} as CategoryDTO, ...sibs.filter((s:CategoryDTO)=>s.id!==cat.value!.id)]
+  // "全部" goes back to parent (or stays on root if no parent)
+  const parentId = cat.value.parentId || cat.value.id
+  return [{id: parentId, name:'全部'} as CategoryDTO, ...sibs.filter((s:CategoryDTO)=>s.id!==cat.value!.id)]
 })
 
 // L2: children of current category
@@ -100,12 +101,13 @@ const l2Tabs = computed((): CategoryDTO[] => {
   return [{id:node.id,name:'全部'} as CategoryDTO, ...node.children]
 })
 
-// L3: children of selected L2
+// L3: children of selected L2 (always show "全部" bar if L2 is active)
 const l3Tabs = computed((): CategoryDTO[] => {
   if (!l2Active.value) return []
   const node = find(l2Active.value, store.categories)
-  if (!node?.children?.length) return []
-  return [{id:node.id,name:'全部'} as CategoryDTO, ...node.children]
+  if (!node) return []
+  const children = node.children || []
+  return [{id: node.id, name:'全部'} as CategoryDTO, ...children]
 })
 
 onMounted(async ()=>{ await store.fetchCategories(); await load(Number(route.params.id)) })
@@ -131,7 +133,7 @@ function fmt(d:string){return new Date(d).toLocaleDateString('zh-CN')}
 .cp-root{max-width:1400px}
 
 /* Bars */
-.cp-bar{display:flex;width:100%;gap:0;padding:0}
+.cp-bar{display:flex;width:100%;gap:0;padding:0;overflow-x:auto;-webkit-overflow-scrolling:touch}
 .cp-bar--l1{border-bottom:2px solid var(--border)}
 .cp-bar--l2{border-bottom:1px solid color-mix(in srgb,var(--fg),6%);padding-top:8px}
 .cp-bar--l3{padding-top:4px}

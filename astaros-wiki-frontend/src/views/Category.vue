@@ -85,10 +85,11 @@ const initLoading = ref(true)
 const pageLoading = ref(false)
 const cur = ref(0); const totalPages = ref(0)
 
-// Breadcrumb: 物品 / 武器 / 剑
+// Breadcrumb: only show selected path
 const breadcrumb = computed(() => {
-  const parts = [root.value?.name || '']
-  if (sel1.value) { const n = find(sel1.value, store.categories); if (n) parts.push(n.name) }
+  const parts: string[] = []
+  if (root.value) parts.push(root.value.name)
+  if (sel1.value) { const n = find(sel1.value, store.categories); if (n && n.id !== root.value?.id) parts.push(n.name) }
   if (sel2.value) { const n = find(sel2.value, store.categories); if (n) parts.push(n.name) }
   if (sel3.value) { const n = find(sel3.value, store.categories); if (n) parts.push(n.name) }
   return parts.join(' / ')
@@ -157,21 +158,24 @@ async function loadPages(catId: number) {
 
 // Click handlers — no router.push!
 function clickL1(t: CategoryDTO) {
-  if (sel1.value === t.id) { sel1.value = 0; sel2.value = 0; sel3.value = 0 }  // deselect
-  else { sel1.value = t.id; sel2.value = 0; sel3.value = 0 }  // select
+  const isAll = l1Tabs.value.length > 0 && l1Tabs.value[0].id === t.id
+  if (isAll || sel1.value === t.id) { sel1.value = 0; sel2.value = 0; sel3.value = 0 }
+  else { sel1.value = t.id; sel2.value = 0; sel3.value = 0 }
   pageload()
 }
 function clickL2(t: CategoryDTO) {
-  if (sel2.value === t.id) { sel2.value = 0; sel3.value = 0 }  // deselect
-  else { sel2.value = t.id; sel3.value = 0 }  // select
+  const isAll = l2Tabs.value.length > 0 && l2Tabs.value[0].id === t.id
+  if (isAll || sel2.value === t.id) { sel2.value = 0; sel3.value = 0 }
+  else { sel2.value = t.id; sel3.value = 0 }
   pageload()
 }
 function clickL3(t: CategoryDTO) {
-  sel3.value = sel3.value === t.id ? 0 : t.id
+  const isAll = l3Tabs.value.length > 0 && l3Tabs.value[0].id === t.id
+  sel3.value = (isAll || sel3.value === t.id) ? 0 : t.id
   pageload()
 }
-async function pageload() { cur.value = 0; await loadPages(activeCatId.value) }
-async function go(p: number) { cur.value = p; await loadPages(activeCatId.value) }
+async function pageload() { cur.value = 0; window.scrollTo({ top: 0, behavior: 'smooth' }); await loadPages(activeCatId.value) }
+async function go(p: number) { cur.value = p; window.scrollTo({ top: 0, behavior: 'smooth' }); await loadPages(activeCatId.value) }
 function fmt(d: string) { return new Date(d).toLocaleDateString('zh-CN') }
 </script>
 
@@ -179,7 +183,8 @@ function fmt(d: string) { return new Date(d).toLocaleDateString('zh-CN') }
 .cp-root { max-width: 1400px; }
 
 /* Bars */
-.cp-bar { display: flex; width: 100%; gap: 0; padding: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.cp-bar{display:flex;flex-wrap:wrap;width:100%;gap:0;padding:0;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.cp-bar--l2,.cp-bar--l3{flex-wrap:wrap}
 .cp-bar--l1 { border-bottom: 2px solid var(--border); }
 .cp-bar--l2 { padding-top: 8px; border-bottom: 1px solid color-mix(in srgb, var(--fg), 6%); }
 .cp-bar--l3 { padding-top: 4px; }

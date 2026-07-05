@@ -130,7 +130,7 @@ async function load(id:number){
   }catch(e){console.error(e)}finally{loading.value=false}
 }
 
-function goTab(t:CategoryDTO){ router.push(`/category/${t.id}`) }
+function goTab(t:CategoryDTO){ l2Active.value=0; router.push(`/category/${t.id}`) }
 function goL2(t:CategoryDTO){ l2Active.value=l2Active.value===t.id?0:t.id }
 function goL3(t:CategoryDTO){ router.push(`/category/${t.id}`) }
 async function go(p:number){ cur.value=p; await load(Number(route.params.id)) }

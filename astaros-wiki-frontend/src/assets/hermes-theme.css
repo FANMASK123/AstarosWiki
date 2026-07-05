@@ -163,6 +163,12 @@ a{color:inherit;text-decoration:none}
 .page-enter-from{opacity:0;transform:translateY(10px) scale(.995)}
 .page-leave-to{opacity:0;transform:translateY(-10px) scale(.995)}
 
+/* Admin child route transitions */
+.admin-child-enter-active{transition:opacity .2s ease-out,transform .2s ease-out}
+.admin-child-leave-active{transition:opacity .12s ease-in,transform .12s ease-in}
+.admin-child-enter-from{opacity:0;transform:translateY(8px)}
+.admin-child-leave-to{opacity:0;transform:translateY(-8px)}
+
 /* ── Misc ───────────────────────────────────────────── */
 .loading{display:flex;justify-content:center;padding:40px 0}
 .spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--fg);border-radius:50%;animation:spin .6s linear infinite}

@@ -7,7 +7,7 @@
       <Plus style="margin-right: 6px" />新建分类
     </button>
 
-    <div class="card">
+    <div class="card cat-tree-card">
       <el-tree
         :data="categoryTree"
         :props="{ children: 'children', label: 'name' }"
@@ -22,9 +22,20 @@
               <span v-if="data.description" class="cat-tree-desc">{{ data.description }}</span>
             </div>
             <div class="cat-tree-actions">
+              <el-tooltip
+                v-if="node.level >= 3"
+                content="已达最大深度（3级）"
+                placement="top"
+              >
+                <span style="display:inline-block">
+                  <button class="btn btn-ghost btn-sm" disabled>
+                    <Plus :size="14" />
+                  </button>
+                </span>
+              </el-tooltip>
               <button
+                v-else
                 class="btn btn-ghost btn-sm"
-                :disabled="node.level >= 3"
                 @click="handleAddChild(data)"
               >
                 <Plus :size="14" />
@@ -52,11 +63,12 @@
         <el-form-item label="父分类">
           <el-tree-select
             v-model="categoryForm.parentId"
-            :data="categoryTree"
+            :data="availableParents"
             :props="{ value: 'id', label: 'name', children: 'children' }"
             placeholder="请选择父分类（可选）"
             clearable
             :disabled="isThirdLevel"
+            check-strictly
           />
           <span v-if="isThirdLevel" style="color: var(--muted); font-size: 12px; display: block; margin-top: 4px">
             分类最多支持三级，无法再添加子分类
@@ -72,7 +84,7 @@
     <!-- Migration dialog -->
     <el-dialog v-model="migrationVisible" title="删除分类 — 页面迁移" width="500px">
       <p style="margin-bottom:16px;color:var(--muted)">
-        分类「<strong style="color:var(--fg)">{{ deleteTarget?.name }}</strong>」下有页面，请选择迁移目标：
+        分类「<strong style="color:var(--fg)">{{ deleteTarget?.name }}</strong>」下有 <strong style="color:var(--fg)">{{ migratePageCount }}</strong> 个页面，请选择迁移目标：
       </p>
       <el-select v-model="migrateToId" placeholder="选择目标分类" style="width:100%">
         <el-option v-for="t in migrateTargets" :key="t.id" :label="t.name" :value="t.id" />
@@ -110,6 +122,19 @@ const parentCategory = ref<CategoryDTO | null>(null)
 const isThirdLevel = computed(() => {
   if (!parentCategory.value) return false
   return getCategoryLevel(parentCategory.value) >= 3
+})
+
+// Filter tree for parent selector: only depth ≤ 2 nodes can be parents
+const availableParents = computed((): CategoryDTO[] => {
+  function cloneShallow(nodes: CategoryDTO[], depth: number): CategoryDTO[] {
+    return nodes
+      .filter((n: CategoryDTO): boolean => depth < 3 && !!n)
+      .map((n: CategoryDTO) => ({
+        ...n,
+        children: n.children?.length ? cloneShallow(n.children, depth + 1) : [],
+      }))
+  }
+  return cloneShallow(categoryStore.categories, 1)
 })
 
 function getCategoryLevel(category: CategoryDTO): number {
@@ -230,13 +255,16 @@ const handleDelete = async (category: CategoryDTO) => {
 
     // Check if category has pages
     let hasPages = false
+    let pageCount = 0
     try {
       const pr = await getPagesByCategory(category.id, 0, 1)
       hasPages = pr.code === 200 && pr.data.total > 0
+      pageCount = pr.code === 200 ? pr.data.total : 0
     } catch { /* ignore */ }
 
     if (hasPages) {
       deleteTarget.value = category
+      migratePageCount.value = pageCount
       migrationVisible.value = true
       return
     }
@@ -253,6 +281,7 @@ const handleDelete = async (category: CategoryDTO) => {
 const deleteTarget = ref<CategoryDTO | null>(null)
 const migrationVisible = ref(false)
 const migrateToId = ref<number | null>(null)
+const migratePageCount = ref(0)
 
 async function handleMigrate() {
   if (!deleteTarget.value || !migrateToId.value) { ElMessage.warning('请选择目标分类'); return }
@@ -280,6 +309,20 @@ const migrateTargets = computed((): CategoryDTO[] => {
 </script>
 
 <style scoped>
+.cat-tree-card {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.cat-tree-card :deep(.el-tree) {
+  background: transparent;
+}
+
+.cat-tree-card :deep(.el-tree-node__content) {
+  height: auto;
+  min-height: 36px;
+}
+
 .admin-categories { max-width: 900px; }
 
 .cat-tree-row {

@@ -9,7 +9,13 @@
       <router-link to="/admin/pages" class="admin-nav-link" :class="{active:$route.path.startsWith('/admin/pages')}"><span class="admin-nav-num">05</span>页面管理</router-link>
       <router-link to="/admin/logs" class="admin-nav-link" :class="{active:$route.path.startsWith('/admin/logs')}"><span class="admin-nav-num">06</span>操作日志</router-link>
     </nav>
-    <div class="admin-content"><router-view /></div>
+    <div class="admin-content">
+      <router-view v-slot="{ Component }">
+        <Transition name="admin-child" mode="out-in">
+          <component :is="Component" />
+        </Transition>
+      </router-view>
+    </div>
   </div>
 </template>
 

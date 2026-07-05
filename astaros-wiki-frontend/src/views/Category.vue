@@ -26,7 +26,7 @@
       <Transition name="cp-slide">
         <div v-if="l3Tabs.length >= 1" class="cp-bar cp-bar--l3">
           <button v-for="t in l3Tabs" :key="'l3-'+t.id"
-            class="cp-tab cp-tab--l3"
+            class="cp-tab cp-tab--l3" :class="{ active: t.id === l3Active }"
             @click="goL3(t)">{{ t.name }}</button>
         </div>
       </Transition>
@@ -69,6 +69,7 @@ const pages = ref<PageDTO[]>([])
 const loading = ref(true)
 const cur = ref(0); const totalPages = ref(0)
 const l2Active = ref<number>(0)
+const l3Active = ref<number>(0)
 
 // Tree search
 function find(id: number, nodes: CategoryDTO[]): CategoryDTO|null {
@@ -121,7 +122,7 @@ onMounted(async ()=>{ await store.fetchCategories(); await load(Number(route.par
 watch(()=>route.params.id, async (v)=>{ cur.value=0; await load(Number(v)) })
 
 async function load(id:number){
-  loading.value=true; l2Active.value=0
+  loading.value=true; l2Active.value=0; l3Active.value=0
   try{
     const r=await getCategoryById(id)
     if(r.code===200){ cat.value=r.data; parent.value=r.data.parentId?(await getCategoryById(r.data.parentId)).data:null }
@@ -130,8 +131,8 @@ async function load(id:number){
   }catch(e){console.error(e)}finally{loading.value=false}
 }
 
-function goTab(t:CategoryDTO){ l2Active.value=0; router.push(`/category/${t.id}`) }
-function goL2(t:CategoryDTO){ l2Active.value=l2Active.value===t.id?0:t.id }
+function goTab(t:CategoryDTO){ if(t.id===currentId.value) return; l2Active.value=0; l3Active.value=0; router.push(`/category/${t.id}`) }
+function goL2(t:CategoryDTO){ l2Active.value=l2Active.value===t.id?0:t.id; if(l2Active.value===0) l3Active.value=0 }
 function goL3(t:CategoryDTO){ router.push(`/category/${t.id}`) }
 async function go(p:number){ cur.value=p; await load(Number(route.params.id)) }
 function fmt(d:string){return new Date(d).toLocaleDateString('zh-CN')}
@@ -161,6 +162,7 @@ function fmt(d:string){return new Date(d).toLocaleDateString('zh-CN')}
 
 .cp-tab--l3{font-size:10px;color:var(--muted);border:1px solid color-mix(in srgb,var(--fg),8%);background:color-mix(in srgb,var(--fg),2%)}
 .cp-tab--l3:hover{color:var(--fg);border-color:var(--fg)}
+.cp-tab--l3.active{color:var(--fg);border-color:var(--fg);background:color-mix(in srgb,var(--fg),6%)}
 
 .cp-slide-enter-active{transition:all .2s ease-out;overflow:hidden}
 .cp-slide-leave-active{transition:all .12s ease-in;overflow:hidden}

@@ -82,7 +82,7 @@
     </el-dialog>
 
     <!-- Migration dialog -->
-    <el-dialog v-model="migrationVisible" title="删除分类 — 页面迁移" width="500px">
+    <el-dialog v-model="migrationVisible" title="删除分类 — 页面迁移" width="500px" @closed="migrateToId=null; migratePageCount=0; deleteTarget=null">
       <p style="margin-bottom:16px;color:var(--muted)">
         分类「<strong style="color:var(--fg)">{{ deleteTarget?.name }}</strong>」下有 <strong style="color:var(--fg)">{{ migratePageCount }}</strong> 个页面，请选择迁移目标：
       </p>

@@ -1,0 +1,113 @@
+{
+  "batch_goal": "构建阿斯塔洛斯世界观核心设定词条",
+  "articles": [
+    {
+      "title": "阿斯塔洛斯",
+      "category_path": [
+        "世界观",
+        "核心设定"
+      ],
+      "page_type": "setting",
+      "template_fields": [
+        "名称",
+        "范畴",
+        "描述",
+        "历史",
+        "影响"
+      ],
+      "key_sources": [
+        "创世神话"
+      ],
+      "related_pages": [],
+      "priority": "high"
+    },
+    {
+      "title": "永夜之地",
+      "category_path": [
+        "地理",
+        "区域"
+      ],
+      "page_type": "location",
+      "template_fields": [
+        "名称",
+        "类型",
+        "归属",
+        "地理",
+        "气候"
+      ],
+      "key_sources": [
+        "北方领地地图"
+      ],
+      "related_pages": [
+        "阿斯塔洛斯"
+      ],
+      "priority": "high"
+    },
+    {
+      "title": "虚空法师团",
+      "category_path": [
+        "阵营",
+        "法师组织"
+      ],
+      "page_type": "faction",
+      "template_fields": [
+        "名称",
+        "类型",
+        "领袖",
+        "理念"
+      ],
+      "key_sources": [
+        "法师团编年史"
+      ],
+      "related_pages": [
+        "阿斯塔洛斯",
+        "符文锻造术"
+      ],
+      "priority": "medium"
+    },
+    {
+      "title": "第一次裂变战争",
+      "category_path": [
+        "历史",
+        "重大事件"
+      ],
+      "page_type": "event",
+      "template_fields": [
+        "名称",
+        "时间",
+        "地点",
+        "参与者",
+        "起因"
+      ],
+      "key_sources": [
+        "裂变战争回忆录"
+      ],
+      "related_pages": [
+        "阿斯塔洛斯",
+        "虚空法师团"
+      ],
+      "priority": "high"
+    },
+    {
+      "title": "符文锻造术",
+      "category_path": [
+        "技术",
+        "符文术"
+      ],
+      "page_type": "technology",
+      "template_fields": [
+        "名称",
+        "类型",
+        "起源",
+        "原理"
+      ],
+      "key_sources": [
+        "符文锻造手册"
+      ],
+      "related_pages": [
+        "虚空法师团"
+      ],
+      "priority": "medium"
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "batch_topic": "阿斯塔洛斯世界观核心设定",
+  "world_spec": "阿斯塔洛斯是一个永夜笼罩的暗黑奇幻世界。核心元素：永夜、虚空、符文、裂变。太阳熄灭后，古代符文和虚空裂隙是主要光源。",
+  "entries": [
+    {
+      "title": "阿斯塔洛斯",
+      "page_type": "setting",
+      "category_path": [
+        "世界观",
+        "核心设定"
+      ]
+    },
+    {
+      "title": "永夜之地",
+      "page_type": "location",
+      "category_path": [
+        "地理",
+        "区域"
+      ]
+    },
+    {
+      "title": "虚空法师团",
+      "page_type": "faction",
+      "category_path": [
+        "阵营",
+        "法师组织"
+      ]
+    },
+    {
+      "title": "第一次裂变战争",
+      "page_type": "event",
+      "category_path": [
+        "历史",
+        "重大事件"
+      ]
+    },
+    {
+      "title": "符文锻造术",
+      "page_type": "technology",
+      "category_path": [
+        "技术",
+        "符文术"
+      ]
+    }
+  ]
+}

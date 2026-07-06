@@ -95,6 +95,8 @@ public class SecurityConfig {
                 
                 // 公开内容接口：所有人都可以访问（浏览页面、分类、标签）
                 .requestMatchers("/api/pages/**", "/api/categories/**", "/api/tags/**").permitAll()
+                .requestMatchers("/api/files/**").authenticated()
+                .requestMatchers("/uploads/**").permitAll()
                 
                 // 用户相关接口：需要登录认证
                 .requestMatchers("/api/users/**").authenticated()

@@ -109,13 +109,12 @@ const l2Tabs = computed((): CategoryDTO[] => {
   return [{id:node.id,name:'全部'} as CategoryDTO, ...node.children]
 })
 
-// L3: selected L2's children
+// L3: grandchildren of the active L2 — no "全部" pseudo-tab
 const l3Tabs = computed((): CategoryDTO[] => {
   if (!l2Active.value) return []
   const node = find(l2Active.value, store.categories)
   if (!node) return []
-  const children = node.children || []
-  return [{id: node.id, name:'全部'} as CategoryDTO, ...children]
+  return node.children || []
 })
 
 onMounted(async ()=>{ await store.fetchCategories(); await load(Number(route.params.id)) })
@@ -132,8 +131,27 @@ async function load(id:number){
 }
 
 function goTab(t:CategoryDTO){ if(t.id===currentId.value) return; l2Active.value=0; l3Active.value=0; router.push(`/category/${t.id}`) }
-function goL2(t:CategoryDTO){ l2Active.value=l2Active.value===t.id?0:t.id; if(l2Active.value===0) l3Active.value=0 }
-function goL3(t:CategoryDTO){ router.push(`/category/${t.id}`) }
+async function goL2(t:CategoryDTO){
+  const wasActive = l2Active.value===t.id
+  l2Active.value = wasActive ? 0 : t.id
+  l3Active.value = 0
+  cur.value = 0
+  const filterId = l2Active.value || Number(route.params.id)
+  try {
+    const pr = await getPagesByCategory(filterId, 0, 10)
+    if(pr.code===200){ pages.value=pr.data.content; totalPages.value=pr.data.totalPages }
+  } catch(e){ console.error(e) }
+}
+// L3 click: stay on current page, filter pages in-place
+async function goL3(t:CategoryDTO){
+  l3Active.value = l3Active.value===t.id ? 0 : t.id
+  cur.value = 0
+  const filterId = l3Active.value || l2Active.value || Number(route.params.id)
+  try {
+    const pr = await getPagesByCategory(filterId, 0, 10)
+    if(pr.code===200){ pages.value=pr.data.content; totalPages.value=pr.data.totalPages }
+  } catch(e){ console.error(e) }
+}
 async function go(p:number){ cur.value=p; await load(Number(route.params.id)) }
 function fmt(d:string){return new Date(d).toLocaleDateString('zh-CN')}
 </script>

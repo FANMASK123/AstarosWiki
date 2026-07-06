@@ -43,7 +43,13 @@
           </el-select>
         </el-form-item>
         <el-form-item label="内容">
-          <el-input v-model="pageForm.content" type="textarea" :rows="16" placeholder="页面内容" style="width:100%" />
+          <MdEditor
+            v-model="pageForm.content"
+            :style="{ height: '500px', width: '100%' }"
+            :toolbars="toolbars"
+            @on-upload-img="handleUploadImg"
+            placeholder="支持 Markdown 语法..."
+          />
         </el-form-item>
         <el-form-item>
           <div class="row">
@@ -80,6 +86,10 @@ import { createPage, updatePage, getPageBySlug, getPageHistory, rollbackPage } f
 import type { CategoryDTO } from '../../api/category'
 import type { PageVersion } from '../../api/page'
 import { ElMessage } from 'element-plus'
+import { MdEditor } from 'md-editor-v3'
+import 'md-editor-v3/lib/style.css'
+import type { ToolbarNames } from 'md-editor-v3'
+import { uploadFile } from '../../api/file'
 
 const route = useRoute()
 const categoryStore = useCategoryStore()
@@ -90,6 +100,38 @@ const loading = ref(false)
 
 const pageForm = reactive({ title:'', content:'', categoryId:null as number|null, tagNames:[] as string[] })
 const categoryOptions = ref<CategoryDTO[]>([])
+
+// MdEditor toolbars
+const toolbars: ToolbarNames[] = [
+  'bold', 'underline', 'italic', 'strikeThrough',
+  '-',
+  'title', 'quote', 'unorderedList', 'orderedList', 'task',
+  '-',
+  'code', 'codeRow', 'link', 'image', 'table',
+  '-',
+  'revoke', 'next',
+  '=',
+  'preview', 'previewOnly',
+]
+
+// Image upload — calls backend FileController
+async function handleUploadImg(files: File[], callback: (urls: string[]) => void) {
+  const urls: string[] = []
+  for (const file of files) {
+    try {
+      const res = await uploadFile(file)
+      if (res.code === 200 && res.data) {
+        urls.push(res.data)
+      } else {
+        ElMessage.error(res.msg || '图片上传失败')
+      }
+    } catch (e) {
+      console.error('Upload failed:', e)
+      ElMessage.error('图片上传失败')
+    }
+  }
+  callback(urls)
+}
 
 // ── Cascade picker state ──
 const showCascade = ref(false)
@@ -114,8 +156,34 @@ const historyVersions = ref<PageVersion[]>([]); const currentPageVersion = ref(0
 onMounted(async () => {
   await categoryStore.fetchCategories(); categoryOptions.value=categoryStore.categories
   await tagStore.fetchTags()
-  if (isEdit.value) { const r = await getPageBySlug(slug.value); if (r.code===200) { pageForm.title=r.data.title; pageForm.content=r.data.content; pageForm.categoryId=r.data.categoryId; pageForm.tagNames=r.data.tags||[]; currentPageVersion.value=r.data.version } }
+  if (isEdit.value) {
+    const r = await getPageBySlug(slug.value)
+    if (r.code===200) {
+      pageForm.title=r.data.title
+      pageForm.content=r.data.content
+      pageForm.categoryId=r.data.categoryId
+      pageForm.tagNames=r.data.tags||[]
+      currentPageVersion.value=r.data.version
+      // Restore cascade selection
+      if (r.data.categoryId) restoreCascade(r.data.categoryId)
+    }
+  }
 })
+
+function restoreCascade(catId: number) {
+  function walk(nodes: CategoryDTO[], parents: CategoryDTO[]): boolean {
+    for (const n of nodes) {
+      if (n.id === catId) {
+        if (parents.length >= 1) selL1.value = parents[0].id
+        if (parents.length >= 2) selL2.value = parents[1].id
+        return true
+      }
+      if (n.children?.length && walk(n.children, [...parents, n])) return true
+    }
+    return false
+  }
+  walk(categoryOptions.value, [])
+}
 
 watch(showHistory, async (v) => { if (v) { historyLoading.value=true; const r = await getPageHistory(slug.value); if (r.code===200) historyVersions.value=r.data; historyLoading.value=false } })
 

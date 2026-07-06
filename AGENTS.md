@@ -59,3 +59,17 @@
 | 功能缺口？ | `docx/requirements/gap-analysis.md` |
 | Wiki 设计需求？ | `docx/requirements/wiki-requirements.md` |
 | Harness 流程？ | `docx/requirements/harness-audit.md` |
+| UI 审计待审核项？ | `docx/requirements/待审核文件.md` |
+
+## Harness Phase 1 架构
+
+| 工具 | 配置文件 | 状态 |
+|------|---------|:----:|
+| ESLint | `eslint.config.js` | ✅ |
+| Prettier | `.prettierrc` | ✅ |
+| Checkstyle | `checkstyle.xml` | ✅ |
+| Vitest | `vitest.config.ts` | ✅ |
+| GitHub Actions CI | `.github/workflows/ci.yml` | ✅ |
+| OWASP | `build.gradle` dependencyCheck | ✅ |
+| Dependabot | `.github/dependabot.yml` | ✅ |
+| Pre-commit | `.pre-commit-config.yaml` | ✅ |

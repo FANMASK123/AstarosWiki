@@ -320,7 +320,12 @@ const migrateTargets = computed((): CategoryDTO[] => {
 
 .cat-tree-card :deep(.el-tree-node__content) {
   height: auto;
-  min-height: 36px;
+  min-height: 48px;
+  line-height: 1.8;
+}
+
+.cat-tree-card :deep(.el-tree-node__content:hover) {
+  background: var(--hover);
 }
 
 .admin-categories { max-width: 900px; }
@@ -342,13 +347,15 @@ const migrateTargets = computed((): CategoryDTO[] => {
 }
 
 .cat-tree-name {
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 14px;
   color: var(--fg);
 }
 
 .cat-tree-desc {
   color: var(--muted);
   font-size: 12px;
+  margin-left: 6px;
 }
 
 .cat-tree-actions {

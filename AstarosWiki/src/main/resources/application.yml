@@ -64,6 +64,14 @@ jwt:
   header: Authorization
   prefix: Bearer
 
+spring.servlet.multipart:
+  max-file-size: 10MB
+  max-request-size: 10MB
+
+file:
+  upload-dir: ${FILE_UPLOAD_DIR:uploads}
+  base-url: /uploads
+
 knife4j:
   enable: ${KNIFE4J_ENABLE:true}
   setting:

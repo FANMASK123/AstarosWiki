@@ -6,13 +6,13 @@
     <p v-else-if="results.length" class="mono mb-16">找到 {{ total }} 条结果</p>
     <div v-if="results.length" class="stack">
       <router-link v-for="p in results" :key="p.id" :to="`/page/${p.slug}`" class="card search-result">
-        <div class="search-result-title">{{ p.title }}</div>
+        <div class="search-result-title" v-html="highlight(p.title)"></div>
         <div class="row mb-16">
           <span class="tag" v-if="p.categoryName">{{ p.categoryName }}</span>
           <span class="mono">{{ p.authorName }}</span>
           <span class="mono">{{ fmt(p.updatedAt) }}</span>
         </div>
-        <p class="text-muted" style="font-size:14px;line-height:1.5">{{ strip(p.content).substring(0, 150) }}...</p>
+        <p class="text-muted" style="font-size:14px;line-height:1.5" v-html="highlight(strip(p.content).substring(0, 150)) + '...'"></p>
       </router-link>
     </div>
     <div v-else-if="searched" class="empty"><p class="eyebrow">0 结果</p><h2 class="section-title">未找到</h2><p class="text-muted">尝试其他关键词</p></div>
@@ -48,6 +48,33 @@ async function go(p: number) { page.value = p; loading.value = true; await fetch
 async function fetch() {
   try { const r = await searchPages(kw.value.trim(), page.value, 10); if (r.code===200) { results.value = r.data.content; pages.value = r.data.totalPages; total.value = r.data.total } } catch(e) { console.error(e) } finally { loading.value = false }
 }
+
+function escapeHtml(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+}
+
+function highlight(text: string): string {
+  if (!kw.value.trim()) return escapeHtml(text)
+  const escaped = escapeHtml(text)
+  const keywords = kw.value.trim().split(/\s+/).filter(k => k.length > 0)
+  let result = escaped
+  for (const keyword of keywords) {
+    const escapedKw = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const re = new RegExp(escapedKw, 'gi')
+    result = result.replace(re, '<mark class="search-mark">$&</mark>')
+  }
+  return result
+}
+
 function fmt(d: string) { return new Date(d).toLocaleDateString('zh-CN') }
-function strip(s: string) { return s.replace(/<[^>]*>/g,'') }
+function strip(s: string) { return s.replace(/<[^>]*>/g, '') }
 </script>
+
+<style scoped>
+.search-mark {
+  background: color-mix(in srgb, var(--fg), 15%);
+  color: var(--fg);
+  border-radius: 2px;
+  padding: 0 2px;
+}
+</style>

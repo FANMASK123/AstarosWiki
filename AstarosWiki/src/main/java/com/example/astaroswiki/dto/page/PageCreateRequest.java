@@ -12,7 +12,6 @@ public class PageCreateRequest {
 
     private String content;
 
-    @NotBlank(message = "Slug不能为空")
     private String slug;
 
     private Long categoryId;

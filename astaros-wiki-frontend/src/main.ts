@@ -36,6 +36,7 @@ import ElementPlus from 'element-plus'
 // --------------------------------------------------------
 // 必须导入 CSS 才能正确显示组件样式
 import 'element-plus/dist/index.css'
+import 'highlight.js/styles/atom-one-dark.css'
 
 // --------------------------------------------------------
 // 导入 Element Plus 图标库

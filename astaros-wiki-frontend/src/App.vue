@@ -8,7 +8,10 @@
         <template v-if="userStore.isLoggedIn()">
           <router-link to="/pages" class="nav-link" active-class="active">页面</router-link>
           <router-link to="/profile" class="nav-link" active-class="active">个人</router-link>
-          <router-link v-if="userStore.isAdmin()" to="/admin" class="nav-link" active-class="active">管理</router-link>
+          <router-link v-if="userStore.isAdmin()" to="/admin" class="nav-link" active-class="active">
+            管理
+            <span v-if="unread>0" class="nav-badge">{{ unread>99?'99+':unread }}</span>
+          </router-link>
           <a class="nav-link" style="cursor:pointer" @click="logout">退出</a>
         </template>
         <template v-else>
@@ -49,20 +52,52 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from './stores/user'
 import { Search } from '@element-plus/icons-vue'
+import { getUnreadCount } from './api/message'
 import Sidebar from './components/Sidebar.vue'
 import Mailbox from './components/Mailbox.vue'
 import MobileMenu from './components/MobileMenu.vue'
 
 const router = useRouter(); const userStore = useUserStore()
 const kw = ref(''); const t = ref<'dark'|'light'>('dark')
+const unread = ref(0)
+let badgeTimer: ReturnType<typeof setInterval> | null = null
 
-onMounted(() => { const s = localStorage.getItem('hermes-theme'); if (s === 'light') set('light'); else set('dark') })
+async function refreshUnread() {
+  if (!userStore.isLoggedIn()) { unread.value = 0; return }
+  try { const r = await getUnreadCount(); if (r.code === 200) unread.value = r.data }
+  catch { /* ignore */ }
+}
+
+onMounted(() => {
+  const s = localStorage.getItem('hermes-theme'); if (s === 'light') set('light'); else set('dark')
+  refreshUnread()
+  badgeTimer = setInterval(refreshUnread, 30000)
+})
+onUnmounted(() => { if (badgeTimer) clearInterval(badgeTimer) })
 function set(v:'dark'|'light') { t.value = v; document.documentElement.setAttribute('data-theme',v); localStorage.setItem('hermes-theme',v) }
 function toggle() { set(t.value==='dark'?'light':'dark') }
 function search() { if (kw.value.trim()) { router.push({path:'/search',query:{keyword:kw.value.trim()}}); kw.value='' } }
 function logout() { userStore.logout(); router.push('/') }
 </script>
+
+<style scoped>
+.nav-badge {
+  position: absolute;
+  top: -2px;
+  right: -6px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 9px;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+}
+</style>

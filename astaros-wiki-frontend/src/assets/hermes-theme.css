@@ -111,14 +111,20 @@ a{color:inherit;text-decoration:none}
 /* ── Page detail ────────────────────────────────────── */
 .page-title{font-weight:700;font-size:clamp(1.4rem,2.8vw,2.2rem);text-transform:uppercase;letter-spacing:.04em;line-height:1.1;margin:8px 0 14px}
 .page-meta{display:flex;gap:14px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:18px}
-.page-body{font-size:15px;line-height:1.8;max-width:100%;word-break:break-word;overflow-wrap:break-word;hyphens:auto}
+.page-body{font-size:15px;line-height:1.8;max-width:100%;word-break:break-word;overflow-wrap:break-word;hyphens:auto;color:var(--fg)}
 .page-body *{max-width:100%}
+.page-body a{color:var(--fg);text-decoration:underline;text-decoration-color:var(--muted)}
+.page-body a:hover{color:var(--muted);text-decoration-color:var(--fg)}
 .page-body pre,.page-body code{white-space:pre-wrap;word-break:break-all}
-.page-body img,.page-body video,.page-body table{max-width:100%;height:auto}
-.page-body table{display:block;overflow-x:auto}
+.page-body pre{background:var(--card);border:1px solid var(--border);border-radius:0;padding:14px;overflow-x:auto}
+.page-body code{background:var(--card);padding:2px 6px;font-family:var(--mono);font-size:13px}
+.page-body img,.page-body video{max-width:100%;height:auto}
+.page-body table{display:block;overflow-x:auto;border-collapse:collapse}
+.page-body th,.page-body td{border:1px solid var(--border);padding:8px 12px}
 .page-body p{margin-bottom:1em}
 .page-body h2,.page-body h3{text-transform:uppercase;letter-spacing:.04em;margin:1.5em 0 .5em}
 .page-body blockquote{border-left:2px solid var(--fg);padding-left:14px;margin:1em 0;color:var(--muted);font-style:italic}
+.page-body hr{border:none;border-top:1px solid var(--border);margin:2em 0}
 
 /* ── Auth pages ─────────────────────────────────────── */
 .auth-page{display:flex;justify-content:center;padding-top:56px}
@@ -278,3 +284,38 @@ a{color:inherit;text-decoration:none}
 
 /* ── Admin Categories scoped override ─────────────── */
 .admin-categories .el-table .el-table__row td.el-table__cell{font-size:14px!important;color:var(--fg)!important;line-height:2em!important;padding:12px!important}
+
+/* ── md-editor-v3 theme overrides (v6.5.3) ──────── */
+/* Map project tokens → md-editor native CSS variables.
+   html[data-theme] prefix boosts specificity above
+   library's .md-editor-dark (0,1,0) safely.              */
+html[data-theme] .md-editor{
+  --md-bk-color:var(--card);
+  --md-bk-color-outstand:var(--hover-light);
+  --md-bk-hover-color:var(--hover);
+  --md-border-color:var(--border);
+  --md-border-hover-color:var(--muted);
+  --md-border-active-color:var(--fg);
+  --md-color:var(--fg);
+  --md-hover-color:var(--hover);
+  --md-scrollbar-bg-color:transparent;
+  --md-scrollbar-thumb-color:var(--border);
+  --md-scrollbar-thumb-hover-color:var(--muted);
+  --md-scrollbar-thumb-active-color:var(--fg);
+  --md-modal-mask:rgba(0,0,0,0.5);
+  --md-modal-shadow:0 8px 24px rgba(0,0,0,0.15);
+  border:1px solid var(--border)!important;
+  border-radius:0!important;
+}
+html[data-theme='dark'] .md-editor{
+  --md-modal-mask:rgba(0,0,0,0.7);
+  --md-modal-shadow:0 8px 24px rgba(0,0,0,0.4);
+}
+/* Preview area follows page background for visual layering */
+html[data-theme] .md-editor .md-editor-preview{background:var(--bg)!important}
+
+/* ── Element Plus textarea ─────────────────────────── */
+.el-textarea__inner{background:var(--bg)!important;color:var(--fg)!important;border:1px solid var(--border)!important;border-radius:0!important;box-shadow:none!important;font-family:var(--font)!important}
+.el-textarea__inner:hover{border-color:var(--muted)!important}
+.el-textarea__inner:focus{border-color:var(--fg)!important}
+.el-textarea__inner::placeholder{color:var(--muted)!important}

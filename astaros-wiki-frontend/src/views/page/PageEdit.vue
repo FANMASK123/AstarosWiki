@@ -45,6 +45,7 @@
         <el-form-item label="内容">
           <MdEditor
             v-model="pageForm.content"
+            :theme="editorTheme"
             :style="{ height: '500px', width: '100%' }"
             :toolbars="toolbars"
             @on-upload-img="handleUploadImg"
@@ -78,7 +79,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, watch } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useCategoryStore } from '../../stores/category'
 import { useTagStore } from '../../stores/tag'
@@ -97,6 +98,14 @@ const tagStore = useTagStore()
 const slug = computed(() => route.params.slug as string || '')
 const isEdit = computed(() => !!slug.value)
 const loading = ref(false)
+
+const getTheme = (): 'dark' | 'light' => {
+  const attr = document.documentElement.getAttribute('data-theme')
+  if (attr === 'light' || attr === 'dark') return attr
+  return localStorage.getItem('hermes-theme') === 'light' ? 'light' : 'dark'
+}
+const editorTheme = ref<'dark' | 'light'>(getTheme())
+let themeObserver: MutationObserver | null = null
 
 const pageForm = reactive({ title:'', content:'', categoryId:null as number|null, tagNames:[] as string[] })
 const categoryOptions = ref<CategoryDTO[]>([])
@@ -164,10 +173,18 @@ onMounted(async () => {
       pageForm.categoryId=r.data.categoryId
       pageForm.tagNames=r.data.tags||[]
       currentPageVersion.value=r.data.version
-      // Restore cascade selection
       if (r.data.categoryId) restoreCascade(r.data.categoryId)
     }
   }
+  themeObserver = new MutationObserver(() => {
+    editorTheme.value = getTheme()
+  })
+  themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+})
+
+onUnmounted(() => {
+  themeObserver?.disconnect()
+  themeObserver = null
 })
 
 function restoreCascade(catId: number) {

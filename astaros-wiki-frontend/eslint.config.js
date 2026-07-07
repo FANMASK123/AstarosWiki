@@ -36,13 +36,14 @@ export default tseslint.config(
         MouseEvent: 'readonly',
         HTMLElement: 'readonly',
         File: 'readonly',
+        MutationObserver: 'readonly',
       },
     },
     rules: {
       '@typescript-eslint/no-explicit-any': 'warn', // any → warn（不阻断）
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       'vue/multi-word-component-names': 'off', // 允许单字组件名
-      'no-console': 'warn', // console → warn
+      'no-console': ['warn', { allow: ['error'] }], // allow console.error per R3
     },
   },
 )

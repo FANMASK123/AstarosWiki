@@ -218,6 +218,7 @@ const handleSubmit = async (slug: string) => {
       loadPages()
     }
   } catch (error) {
+    console.error(error)
     ElMessage.error('提交失败')
   }
 }

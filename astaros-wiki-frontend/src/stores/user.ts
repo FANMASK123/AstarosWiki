@@ -24,6 +24,7 @@ export const useUserStore = defineStore('user', () => {
       }
       return false
     } catch (error) {
+      console.error(error)
       return false
     }
   }
@@ -37,6 +38,7 @@ export const useUserStore = defineStore('user', () => {
       }
       return false
     } catch (error) {
+      console.error(error)
       return false
     }
   }

@@ -177,7 +177,12 @@ public class PageService {
 
     @Transactional
     public PageDTO createPage(PageCreateRequest request, Long authorId, boolean publish) {
-        if (pageRepository.existsBySlug(request.getSlug())) {
+        String slug = request.getSlug();
+        if (!StringUtils.hasText(slug)) {
+            slug = generateSlug(request.getTitle());
+        }
+
+        if (pageRepository.existsBySlug(slug)) {
             throw new BusinessException("Slug已存在");
         }
 
@@ -188,7 +193,7 @@ public class PageService {
         page.setTitle(request.getTitle());
         page.setContent(request.getContent());
         page.setDraftContent(request.getContent());
-        page.setSlug(request.getSlug());
+        page.setSlug(slug);
         page.setAuthorId(authorId);
         page.setStatus(publish ? PageStatus.DRAFT : PageStatus.SAVED);
         page.setVersion(1);
@@ -475,6 +480,20 @@ public class PageService {
 
         page = pageRepository.save(page);
         return convertToDTO(page);
+    }
+
+    private String generateSlug(String title) {
+        if (!StringUtils.hasText(title)) {
+            return "page-" + System.currentTimeMillis();
+        }
+        String slug = title.toLowerCase()
+            .replaceAll("[^a-zA-Z0-9\\u4e00-\\u9fa5]", "-")
+            .replaceAll("-+", "-")
+            .replaceAll("^-|-$", "");
+        if (!StringUtils.hasText(slug)) {
+            slug = "page-" + System.currentTimeMillis();
+        }
+        return slug;
     }
 
     private boolean isAdmin(Long userId) {

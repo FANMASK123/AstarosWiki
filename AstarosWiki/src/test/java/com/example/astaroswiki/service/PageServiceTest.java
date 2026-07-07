@@ -28,6 +28,8 @@ import org.springframework.data.domain.PageRequest;
 import java.util.List;
 import java.util.Optional;
 
+import org.mockito.ArgumentCaptor;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -178,9 +180,55 @@ class PageServiceTest {
         }
 
         @Test
+        @DisplayName("Slug 为空 → 根据 title 自动生成")
+        void shouldAutoGenerateSlugWhenBlank() {
+            PageCreateRequest req = new PageCreateRequest();
+            req.setTitle("Hello World");
+            req.setContent("content");
+            // slug 不设置 → null，触发 generateSlug
+            when(pageRepository.existsBySlug("hello-world")).thenReturn(false);
+            when(userRepository.findById(1L)).thenReturn(Optional.of(author));
+            when(pageRepository.save(any(WikiPage.class))).thenAnswer(inv -> {
+                WikiPage p = inv.getArgument(0);
+                p.setId(300L);
+                return p;
+            });
+
+            pageService.createPage(req, 1L, false);
+
+            ArgumentCaptor<WikiPage> captor = ArgumentCaptor.forClass(WikiPage.class);
+            verify(pageRepository).save(captor.capture());
+            assertThat(captor.getValue().getSlug()).isEqualTo("hello-world");
+        }
+
+        @Test
+        @DisplayName("Slug 为空白 → 从含空格中文标题生成 slug，保留中文并替换空格")
+        void shouldPreserveChineseAndReplaceSpacesWhenSlugBlank() {
+            PageCreateRequest req = new PageCreateRequest();
+            req.setTitle("中文 标题 测试");
+            req.setSlug("   ");
+            req.setContent("content");
+            when(pageRepository.existsBySlug("中文-标题-测试")).thenReturn(false);
+            when(userRepository.findById(1L)).thenReturn(Optional.of(author));
+            when(pageRepository.save(any(WikiPage.class))).thenAnswer(inv -> {
+                WikiPage p = inv.getArgument(0);
+                p.setId(301L);
+                return p;
+            });
+
+            pageService.createPage(req, 1L, false);
+
+            ArgumentCaptor<WikiPage> captor = ArgumentCaptor.forClass(WikiPage.class);
+            verify(pageRepository).save(captor.capture());
+            String slug = captor.getValue().getSlug();
+            assertThat(slug).isEqualTo("中文-标题-测试");
+        }
+
+        @Test
         @DisplayName("Slug 已存在 → 抛异常")
         void shouldThrowWhenSlugTaken() {
             PageCreateRequest req = new PageCreateRequest();
+            req.setTitle("Test Page");
             req.setSlug("taken");
             when(pageRepository.existsBySlug("taken")).thenReturn(true);
 
